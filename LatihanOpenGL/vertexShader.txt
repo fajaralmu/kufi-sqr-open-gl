@@ -1,6 +1,8 @@
 #version 330 core
 layout(location = 0) in vec3 vertexPosition_modelspace; 
-layout(location = 1) in vec3 vertexColor;  // "1" eq "1" in glVertexAttribPointer
+
+//layout(location = 1) in vec3 vertexColor;  // "1" eq "1" in glVertexAttribPointer
+layout(location = 1) in vec2 vertexUV; 
 
 //if 3 component in cpp, 3 here
 //layout -> refers to the buffer used to feed the vertexPosition_modelspace attribute
@@ -10,13 +12,15 @@ layout(location = 1) in vec3 vertexColor;  // "1" eq "1" in glVertexAttribPointe
 
 uniform mat4 MVP;
 
-out vec3 fragmentColor;
+//out vec3 fragmentColor;
+out vec2 UV;
 
 void main(){
 	//OUTPUT position of the vertex = MVP * POSITION
 	gl_Position= MVP * vec4(vertexPosition_modelspace,1);
 
-	fragmentColor = vertexColor;
+//	fragmentColor = vertexColor;
+	UV  = vertexUV;
 	
 }
 

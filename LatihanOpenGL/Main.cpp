@@ -10,13 +10,14 @@
 #include <glfw3.h>
 #include <glm.hpp>
 #include <gtx/transform.hpp>
-#include "common\LoadShader.hpp"
+#include "common\ResourceLoader.hpp"
 
 using namespace glm;
 using namespace std;
 
 GLFWwindow* window;
 GLuint vertexArrayID;
+GLuint textureID;
 GLuint vertexBuffer; //identify vertexBuffer
 GLuint colorBuffer;
 GLuint programID;
@@ -102,6 +103,44 @@ static GLfloat g_color_buffer_data[] = {
 	0.820f, 0.883f, 0.371f,
 	0.982f, 0.099f, 0.879f
 };
+static const GLfloat g_uv_buffer_data[] = {
+	0.000059f, 1.0f - 0.000004f,
+	0.000103f, 1.0f - 0.336048f,
+	0.335973f, 1.0f - 0.335903f,
+	1.000023f, 1.0f - 0.000013f,
+	0.667979f, 1.0f - 0.335851f,
+	0.999958f, 1.0f - 0.336064f,
+	0.667979f, 1.0f - 0.335851f,
+	0.336024f, 1.0f - 0.671877f,
+	0.667969f, 1.0f - 0.671889f,
+	1.000023f, 1.0f - 0.000013f,
+	0.668104f, 1.0f - 0.000013f,
+	0.667979f, 1.0f - 0.335851f,
+	0.000059f, 1.0f - 0.000004f,
+	0.335973f, 1.0f - 0.335903f,
+	0.336098f, 1.0f - 0.000071f,
+	0.667979f, 1.0f - 0.335851f,
+	0.335973f, 1.0f - 0.335903f,
+	0.336024f, 1.0f - 0.671877f,
+	1.000004f, 1.0f - 0.671847f,
+	0.999958f, 1.0f - 0.336064f,
+	0.667979f, 1.0f - 0.335851f,
+	0.668104f, 1.0f - 0.000013f,
+	0.335973f, 1.0f - 0.335903f,
+	0.667979f, 1.0f - 0.335851f,
+	0.335973f, 1.0f - 0.335903f,
+	0.668104f, 1.0f - 0.000013f,
+	0.336098f, 1.0f - 0.000071f,
+	0.000103f, 1.0f - 0.336048f,
+	0.000004f, 1.0f - 0.671870f,
+	0.336024f, 1.0f - 0.671877f,
+	0.000103f, 1.0f - 0.336048f,
+	0.336024f, 1.0f - 0.671877f,
+	0.335973f, 1.0f - 0.335903f,
+	0.667969f, 1.0f - 0.671889f,
+	1.000004f, 1.0f - 0.671847f,
+	0.667979f, 1.0f - 0.335851f
+};
 //position
 vec3 cameraPositionDefault = vec3(4, 3, 3); //in world space
 vec3 cameraLookAtPositionDefault = vec3(0, 0, 0); //look at position
@@ -122,12 +161,12 @@ void updateColor() {
 	else {
 		return;
 	}
-	for (int i = 0; i < sizeof(g_color_buffer_data)/sizeof(g_color_buffer_data[0]); i++)
+	for (int i = 0; i < sizeof(g_color_buffer_data) / sizeof(g_color_buffer_data[0]); i++)
 	{
 		float  f = g_color_buffer_data[i];
 		srand(i);
-		f += (rand()/1000.0f);
-	//	cout << "F: " << f;
+		f += (rand() / 1000.0f);
+		//	cout << "F: " << f;
 
 		if (f > 1) {
 			f = 0;
@@ -184,10 +223,19 @@ void initBuffer() {
 	//cout << "SIZE:" << size << endl;
 	glBufferData(GL_ARRAY_BUFFER, size, g_vertex_buffer_data, GL_STATIC_DRAW);
 
-	/*COLOR BUFFER*/
+	/*COLOR BUFFER*/ // NOW USE TEXTURE
+	/*
 	glGenBuffers(1, &colorBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
+	*/
+	/*TEXTURE BUFFER*/
+//	textureID = loadBMP_custom("number.bmp");
+	textureID = loadDDS("uvmap.dds");
+
+	glGenBuffers(1, &textureID);
+	glBindBuffer(GL_ARRAY_BUFFER, textureID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_buffer_data), g_uv_buffer_data, GL_STATIC_DRAW);
 
 }
 
@@ -245,6 +293,7 @@ int main() {
 	}
 	cout << "window init" << endl;
 	initBuffer();
+
 	cout << "vertex init" << vertexArrayID << " " << vertexBuffer << endl;
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
@@ -259,12 +308,11 @@ int main() {
 	do {
 		glEnable(GL_DEPTH_TEST); // z component
 		glDepthFunc(GL_LESS); //accept fragment if it closer to the camera than the former one
-		initBuffer();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0, 0, 0.4, 0);
-		
+
 		handleKeyPress();
-		updateColor();
+	
 		/*COMPUTE COORDS*/
 		//projection
 		float angle = 45.0;
@@ -273,7 +321,6 @@ int main() {
 		mat4 projection = glm::perspective(glm::radians(angle), aspectRatio, nearClippingPane, farClippingPane);
 
 		//camera matrix
-
 		mat4 view = glm::lookAt(cameraPosition, cameraLookAtPosition, headPosition);
 
 		//model at origin
@@ -297,10 +344,11 @@ int main() {
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 		glVertexAttribPointer(0, size, type, isNormalized, stride, (void *)arrayBufferOffset);
 
-		/*2ND ATRIBUTE BUFFER: COLOR*/
+		/*2ND ATRIBUTE BUFFER: latest=> UV, former=> COLOR*/ 
 		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-		glVertexAttribPointer(1, size, type, isNormalized, stride, (void *)arrayBufferOffset);
+		glBindBuffer(GL_ARRAY_BUFFER, textureID);
+		int coordSize = 2;
+		glVertexAttribPointer(1, coordSize, type, isNormalized, stride, (void *)arrayBufferOffset);
 
 		/*DRAW*/
 		//triangle

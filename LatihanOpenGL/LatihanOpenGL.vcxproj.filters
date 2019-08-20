@@ -29,12 +29,18 @@
     <Image Include="uvtemplate.bmp">
       <Filter>h</Filter>
     </Image>
+    <Image Include="number.bmp">
+      <Filter>h</Filter>
+    </Image>
+    <Image Include="uvmap.DDS">
+      <Filter>h</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LoadShader.cpp">
+    <ClCompile Include="ResourceLoader.cpp">
       <Filter>common</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,7 +53,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="common\LoadShader.hpp">
+    <ClInclude Include="common\ResourceLoader.hpp">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

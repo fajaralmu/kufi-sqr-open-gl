@@ -1,9 +1,17 @@
 //set the color of each fragment 
 #version 330 core
-in vec3 fragmentColor;
+
+//in vec3 fragmentColor;
+in vec2 UV;
+
+//output data
 out vec3 color;
+
+//values that stay constant for whole mesh
+uniform sampler2D textureSampler;
 
 
 void main(){
-	color =fragmentColor;// vec3(1,0,0);
+	//color =fragmentColor;// vec3(1,0,0);
+	color = texture(textureSampler, UV).rgb;
 }

@@ -121,11 +121,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <Image Include="material_ray.png" />
+    <Image Include="number.bmp" />
+    <Image Include="uvmap.DDS" />
     <Image Include="uvtemplate.bmp" />
     <Image Include="uvtemplate.dds" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="LoadShader.cpp" />
+    <ClCompile Include="ResourceLoader.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -133,7 +135,7 @@
     <Text Include="vertexShader.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="common\LoadShader.hpp" />
+    <ClInclude Include="common\ResourceLoader.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
