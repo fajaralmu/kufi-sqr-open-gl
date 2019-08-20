@@ -1,0 +1,7 @@
+﻿cl : Command line warning D9025: overriding '/TC' with '/TP'
+  etc1_utils.c
+  image_DXT.c
+  image_helper.c
+  SOIL2.c
+  Generating Code...
+  soil2-static-lib.vcxproj -> C:\Users\fajar\Documents\Visual Studio 2015\Projects\LatihanOpenGL\SpartanJ-soil2-54073b423037\make\windows\..\..\lib\windows\soil2.lib

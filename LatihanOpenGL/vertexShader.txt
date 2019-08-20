@@ -1,0 +1,13 @@
+#version 330 core
+layout(location = 0) in vec3 vertexPosition_modelspace; //if 3 component in cpp, 3 here
+//layout -> refers to the buffer used to feed the vertexPosition_modelspace attribute
+//each vertex can have numerous attributes: position, color, texture coord, etc
+//vertexPosition_modelspace -> variable contains the position of the vertex for each run of vertex shader
+//IN -> this is INPUT data
+
+void main(){
+	gl_Position.xyz = vertexPosition_modelspace;
+	gl_Position.w = 1.0;
+	
+}
+

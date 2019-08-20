@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{D294ECD4-4B77-EA4B-A24B-B0C8DF79E18D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\perf_test">
+      <UniqueIdentifier>{D2407074-ABB8-DE4E-A386-9E9E8F8C2E9B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\common">
+      <UniqueIdentifier>{84BB52EA-2162-D245-9726-B17A5DA9B649}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\perf_test\test_perf_SOIL2.cpp">
+      <Filter>src\perf_test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\common.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
