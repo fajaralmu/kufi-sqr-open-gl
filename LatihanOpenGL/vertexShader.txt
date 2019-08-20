@@ -1,13 +1,22 @@
 #version 330 core
-layout(location = 0) in vec3 vertexPosition_modelspace; //if 3 component in cpp, 3 here
+layout(location = 0) in vec3 vertexPosition_modelspace; 
+layout(location = 1) in vec3 vertexColor;  // "1" eq "1" in glVertexAttribPointer
+
+//if 3 component in cpp, 3 here
 //layout -> refers to the buffer used to feed the vertexPosition_modelspace attribute
 //each vertex can have numerous attributes: position, color, texture coord, etc
 //vertexPosition_modelspace -> variable contains the position of the vertex for each run of vertex shader
 //IN -> this is INPUT data
 
+uniform mat4 MVP;
+
+out vec3 fragmentColor;
+
 void main(){
-	gl_Position.xyz = vertexPosition_modelspace;
-	gl_Position.w = 1.0;
+	//OUTPUT position of the vertex = MVP * POSITION
+	gl_Position= MVP * vec4(vertexPosition_modelspace,1);
+
+	fragmentColor = vertexColor;
 	
 }
 
