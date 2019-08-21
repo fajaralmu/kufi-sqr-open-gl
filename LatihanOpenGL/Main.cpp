@@ -166,6 +166,13 @@ vec3 direction, up, rightMove;
 float velocity = 0.5;
 int counter = 20;
 
+/*OBJ #1*/
+vector<glm::vec3> vertexarray, normalarray;
+vector<glm::vec2> uvarray;
+GLuint uvbuffer;
+GLuint normalbuffer;
+GLuint vertexbuffer;
+
 
 void printVector(vec3 vec, string name) {
 	std::cout << name << ", x:" << vec.x << " y:" << vec.y << " z:" << vec.z << endl;
@@ -208,7 +215,7 @@ bool initWindow() {
 	//
 }
 
-void initBuffer() {
+void initBufferV1() {
 
 	glGenVertexArrays(1, &vertexArrayID);
 	glBindVertexArray(vertexArrayID);
@@ -221,12 +228,12 @@ void initBuffer() {
 	//std::cout << "SIZE:" << size << endl;
 	glBufferData(GL_ARRAY_BUFFER, size, g_vertex_buffer_data, GL_STATIC_DRAW);
 
-	/*COLOR BUFFER*/ // NOW USE TEXTURE
-	/*
+	/*COLOR BUFFER*/ 
+	
 	glGenBuffers(1, &colorBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
-	*/
+	
 	/*TEXTURE BUFFER*/
 //	textureID = loadBMP_custom("number.bmp");
 	textureID = loadDDS("uvmap.dds");
@@ -234,6 +241,30 @@ void initBuffer() {
 	glGenBuffers(1, &textureID);
 	glBindBuffer(GL_ARRAY_BUFFER, textureID);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_buffer_data), g_uv_buffer_data, GL_STATIC_DRAW);
+
+}
+
+void initBufferV2() {
+	bool res = loadOBJ("cube.obj", vertexarray, uvarray, normalarray);
+	glGenBuffers(1, &vertexbuffer);// The following commands will talk about our 'vertexbuffer' buffer
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);// Give our vertices to OpenGL.
+												//glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertexarray.size() * sizeof(glm::vec3), &vertexarray[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &uvbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_buffer_data), g_uv_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, uvarray.size() * sizeof(glm::vec2), &uvarray[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &normalbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+	glBufferData(GL_ARRAY_BUFFER, normalarray.size() * sizeof(glm::vec3), &normalarray[0], GL_STATIC_DRAW);
+
+	textureID = loadDDS("uvmap.dds");
+
+	glGenBuffers(1, &textureID);
+	glBindBuffer(GL_ARRAY_BUFFER, textureID);
+	glBufferData(GL_ARRAY_BUFFER, uvarray.size(), &uvarray[0], GL_STATIC_DRAW);
 
 }
 
@@ -321,7 +352,7 @@ int main() {
 		return -1;
 	}
 	std::cout << "window init" << endl;
-	initBuffer();
+	initBufferV1();
 
 	std::cout << "vertex init" << vertexArrayID << " " << vertexBuffer << endl;
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
@@ -334,7 +365,7 @@ int main() {
 	std::cout << "matrixID: " << matrixID << ", programID: " << programID << endl;
 	//reset ke tengah
 	glfwSetCursorPos(window, WIN_W / 2, WIN_H / 2);
-
+	cout << "vertex size: " << vertexarray.size() << endl;
 	do {
 		glEnable(GL_DEPTH_TEST); // z component
 		glDepthFunc(GL_LESS); //accept fragment if it closer to the camera than the former one
@@ -378,18 +409,21 @@ int main() {
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 		glVertexAttribPointer(0, size, type, isNormalized, stride, (void *)arrayBufferOffset);
 
-		/*2ND ATRIBUTE BUFFER: latest=> UV, former=> COLOR*/
+		/*2ND ATRIBUTE BUFFER: */
 		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, textureID);
 		int coordSize = 2;
 		glVertexAttribPointer(1, coordSize, type, isNormalized, stride, (void *)arrayBufferOffset);
-
+		
+		
 		/*DRAW*/
 		//triangle
 		GLint startingVertex = 0;
-		GLsizei totalVertices = sizeof(g_vertex_buffer_data) / sizeof(g_vertex_buffer_data[0]);
+		GLsizei totalVertices =  sizeof(g_vertex_buffer_data) / sizeof(g_vertex_buffer_data[0]);
 		glDrawArrays(GL_TRIANGLES, startingVertex, totalVertices);
 		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
 
 		//swap buffer
 		glfwSwapBuffers(window);

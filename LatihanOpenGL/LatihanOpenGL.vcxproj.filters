@@ -18,6 +18,9 @@
     <Filter Include="common">
       <UniqueIdentifier>{2d9ebc20-0b20-4e68-a22b-bff79a3af0ca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{ad42274a-b0a1-4ccf-ba56-c72c21c10ec6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="material_ray.png">
