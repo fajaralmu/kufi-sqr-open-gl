@@ -4,7 +4,9 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
+#include <string>
 #include <random>
+#include <string.h>
 // Include GLEW. Always include it before gl.h and glfw.h, since it's a bit magic.
 #include <glew.h>
 #include <glfw3.h>
@@ -142,43 +144,39 @@ static const GLfloat g_uv_buffer_data[] = {
 	0.667979f, 1.0f - 0.335851f
 };
 //position
-vec3 cameraPositionDefault = vec3(4, 3, 3); //in world space
-vec3 cameraLookAtPositionDefault = vec3(0, 0, 0); //look at position
-vec3 headPositionDefault = vec3(0, 1, 0);// 0,-1,0 to look upside down
+//vec3 cameraPositionDefault = vec3(4, 3, 3); //in world space
+//vec3 cameraLookAtPositionDefault = vec3(0, 0, 0); //look at position
+//vec3 headPositionDefault = vec3(0, 1, 0);// 0,-1,0 to look upside down
 
-vec3 cameraPosition = vec3(4, 3, 3); //in world space
-vec3 cameraLookAtPosition = vec3(0, 0, 0); //look at position
-vec3 headPosition = vec3(0, 1, 0);// 0,-1,0 to look upside down
+vec3 position = vec3(0, 0, 5);
+float horizontalAngle = 3.14f; //toward -Z
+float verticalAngle = 0.0f; //"0" value look at horizon
+float initialFoV = 45.0f; //initial field of view
+float speed = 3.0f; //3 unit/second
+float mouseSpeed = 0.005f;
+float lastTime = glfwGetTime();
+//
+//vec3 cameraPosition = vec3(4, 3, 3); //in world space
+//vec3 cameraLookAtPosition = vec3(0, 0, 0); //look at position
+//vec3 headPosition = vec3(0, 1, 0);// 0,-1,0 to look upside down
+
+mat4 viewMatrix, projectionMatrix;
+vec3 direction, up, rightMove;
 
 float velocity = 0.5;
 int counter = 20;
 
-void updateColor() {
-	counter++;
-	if (counter > 20) {
-		counter = 0;
-	}
-	else {
-		return;
-	}
-	for (int i = 0; i < sizeof(g_color_buffer_data) / sizeof(g_color_buffer_data[0]); i++)
-	{
-		float  f = g_color_buffer_data[i];
-		srand(i);
-		f += (rand() / 1000.0f);
-		//	cout << "F: " << f;
 
-		if (f > 1) {
-			f = 0;
-		}
-		g_color_buffer_data[i] = f;
-	}
+void printVector(vec3 vec, string name) {
+	std::cout << name << ", x:" << vec.x << " y:" << vec.y << " z:" << vec.z << endl;
 }
 
 void setPosToDefault() {
-	cameraPosition = cameraPositionDefault;
+	/*cameraPosition = cameraPositionDefault;
 	cameraLookAtPosition = cameraLookAtPositionDefault;
-	headPosition = headPositionDefault;
+	headPosition = headPositionDefault;*/
+
+	glfwSetCursorPos(window, WIN_W / 2, WIN_H / 2);
 }
 
 bool initWindow() {
@@ -197,14 +195,14 @@ bool initWindow() {
 
 		return false;
 	}
-	cout << ("Window created.. ") << endl;
+	std::cout << ("Window created.. ") << endl;
 	glfwMakeContextCurrent(window); //Initialize GLEW
 	glewExperimental = true;//Needed in core profile
 	if (glewInit() != GLEW_OK) {
 		fprintf_s(stderr, "Failed initialize GLEW");
 		return false;
 	}
-	cout << ("GLEW initialized.. ") << endl;
+	std::cout << ("GLEW initialized.. ") << endl;
 	return true;
 
 	//
@@ -220,7 +218,7 @@ void initBuffer() {
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 	//give the vertices to OpenGL
 	int size = sizeof(g_vertex_buffer_data);
-	//cout << "SIZE:" << size << endl;
+	//std::cout << "SIZE:" << size << endl;
 	glBufferData(GL_ARRAY_BUFFER, size, g_vertex_buffer_data, GL_STATIC_DRAW);
 
 	/*COLOR BUFFER*/ // NOW USE TEXTURE
@@ -244,37 +242,68 @@ void initShader() {
 }
 
 void handleKeyPress() {
+	double currentTime = glfwGetTime();
+
+	float deltaTime = float(currentTime - lastTime);
+	lastTime = currentTime;
+	//printVector(position, "position");
+
 	bool pressUp = glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS;
 	bool pressDown = glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS;
 	bool pressRight = glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS;
 	bool pressLeft = glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS;
 	bool pressO = glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS;
 
-	std::string pressInfo = "PRESS: ";
+	double  xpos = 0, ypos = 0;
+	glfwGetCursorPos(window, &xpos, &ypos);
 
+	//reset ke tengah
+	glfwSetCursorPos(window, WIN_W / 2, WIN_H / 2);
+
+	//compute orientation
+	horizontalAngle += mouseSpeed * deltaTime * float(WIN_W / 2 - xpos);
+	//std::cout << "horizontal angle: " << horizontalAngle << endl;
+	verticalAngle += mouseSpeed * deltaTime * float(WIN_H / 2 - ypos);
+	//std::cout << xpos << "," << ypos << endl;
+	direction = vec3(
+		cos(verticalAngle) * sin(horizontalAngle),
+		sin(verticalAngle),
+		cos(verticalAngle) * cos(horizontalAngle)
+	);
+	rightMove = vec3(
+		sin(horizontalAngle - 3.14f / 2.0f),
+		0,
+		cos(horizontalAngle - 3.14f / 2.0f)
+	);
+	up = glm::cross(rightMove, direction);
+
+	//forward
 	if (pressUp) {
-		pressInfo += "UP";
-		cameraPosition.y += velocity;
+		position += direction * deltaTime *speed;
 	}
+	//backward
 	if (pressDown) {
-		pressInfo += "DOWN";
-		cameraPosition.y -= velocity;
+		position -= direction * deltaTime *speed;
 	}
+	//right
 	if (pressRight) {
-		pressInfo += "RIGHT";
-		cameraPosition.x += velocity;
+		position += rightMove * deltaTime *speed;
+		printVector(rightMove, "rightMove");
 	}
+	//left
 	if (pressLeft) {
-		pressInfo += "LEFT";
-		cameraPosition.x -= velocity;
-	}
-	if (pressO) {
-		setPosToDefault();
+		position -= rightMove * deltaTime *speed;
+		printVector(rightMove, "rightMove");
 	}
 
-	if (pressUp || pressO || pressDown || pressRight || pressLeft)
-		cout << (pressInfo.c_str()) << endl;
+
+	//if (pressUp || pressO || pressDown || pressRight || pressLeft) {
+	//	std::cout << "control press" << endl;
+	//	printVector(rightMove, "right move");
+
+
 }
+
 
 int main() {
 
@@ -283,7 +312,7 @@ int main() {
 		getchar();
 		return -1;
 	}
-	cout << ("GLFW Initialized") << endl;
+	std::cout << ("GLFW Initialized") << endl;
 
 	bool glewInit = initWindow();
 	if (!glewInit) {
@@ -291,10 +320,10 @@ int main() {
 		getchar();
 		return -1;
 	}
-	cout << "window init" << endl;
+	std::cout << "window init" << endl;
 	initBuffer();
 
-	cout << "vertex init" << vertexArrayID << " " << vertexBuffer << endl;
+	std::cout << "vertex init" << vertexArrayID << " " << vertexBuffer << endl;
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
 	/*use the shader*/
@@ -302,9 +331,10 @@ int main() {
 	glUseProgram(programID);
 
 	matrixID = glGetUniformLocation(programID, "MVP");
-	cout << "matrixID: " << matrixID << ", programID: " << programID << endl;
+	std::cout << "matrixID: " << matrixID << ", programID: " << programID << endl;
+	//reset ke tengah
+	glfwSetCursorPos(window, WIN_W / 2, WIN_H / 2);
 
-	int curX = 4;
 	do {
 		glEnable(GL_DEPTH_TEST); // z component
 		glDepthFunc(GL_LESS); //accept fragment if it closer to the camera than the former one
@@ -312,20 +342,24 @@ int main() {
 		glClearColor(0, 0, 0.4, 0);
 
 		handleKeyPress();
-	
+
 		/*COMPUTE COORDS*/
 		//projection
 		float angle = 45.0;
 		float aspectRatio = (float)WIN_W / (float)WIN_H;
-		float nearClippingPane = 0.1f, farClippingPane = 100.0f; //display range: 0.1 - 100.0f
-		mat4 projection = glm::perspective(glm::radians(angle), aspectRatio, nearClippingPane, farClippingPane);
+		float nearClippingPane = 0.1f;
+		float farClippingPane = 100.0f; //display range: 0.1 - 100.0f
 
-		//camera matrix
-		mat4 view = glm::lookAt(cameraPosition, cameraLookAtPosition, headPosition);
 
 		//model at origin
 		mat4 model = glm::mat4(1.0f);
 		//ViewModelProjection : mult of 3 matrices
+		mat4 projection = glm::perspective(glm::radians(angle), aspectRatio, nearClippingPane, farClippingPane);
+
+		//camera matrix
+		mat4 view = glm::lookAt(position, position + direction, up);
+
+		//std::cout << position.x << "-" << position.y << "-" << position.z << "-" << direction.b << "-" << direction.g << endl;
 		mat4 mvp = projection * view * model;
 
 		//send to currently bound shader
@@ -344,7 +378,7 @@ int main() {
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 		glVertexAttribPointer(0, size, type, isNormalized, stride, (void *)arrayBufferOffset);
 
-		/*2ND ATRIBUTE BUFFER: latest=> UV, former=> COLOR*/ 
+		/*2ND ATRIBUTE BUFFER: latest=> UV, former=> COLOR*/
 		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, textureID);
 		int coordSize = 2;
