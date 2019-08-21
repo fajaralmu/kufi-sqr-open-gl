@@ -143,6 +143,7 @@ static const GLfloat g_uv_buffer_data[] = {
 	1.000004f, 1.0f - 0.671847f,
 	0.667979f, 1.0f - 0.335851f
 };
+
 //position
 //vec3 cameraPositionDefault = vec3(4, 3, 3); //in world space
 //vec3 cameraLookAtPositionDefault = vec3(0, 0, 0); //look at position
@@ -172,6 +173,10 @@ vector<glm::vec2> uvarray;
 GLuint uvbuffer;
 GLuint normalbuffer;
 GLuint vertexbuffer;
+
+//lighting
+
+GLuint lightID, modelMatrixID, viewMatrixID;
 
 
 void printVector(vec3 vec, string name) {
@@ -241,30 +246,48 @@ void initBufferV1() {
 	glGenBuffers(1, &textureID);
 	glBindBuffer(GL_ARRAY_BUFFER, textureID);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_buffer_data), g_uv_buffer_data, GL_STATIC_DRAW);
+	
 
 }
 
 void initBufferV2() {
-	bool res = loadOBJ("cube.obj", vertexarray, uvarray, normalarray);
-	glGenBuffers(1, &vertexbuffer);// The following commands will talk about our 'vertexbuffer' buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);// Give our vertices to OpenGL.
-												//glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-	glBufferData(GL_ARRAY_BUFFER, vertexarray.size() * sizeof(glm::vec3), &vertexarray[0], GL_STATIC_DRAW);
+	bool res = loadOBJ("onta.obj", vertexarray, uvarray, normalarray);
 
-	glGenBuffers(1, &uvbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_buffer_data), g_uv_buffer_data, GL_STATIC_DRAW);
-	glBufferData(GL_ARRAY_BUFFER, uvarray.size() * sizeof(glm::vec2), &uvarray[0], GL_STATIC_DRAW);
+	glGenVertexArrays(1, &vertexArrayID);
+	glBindVertexArray(vertexArrayID);
 
-	glGenBuffers(1, &normalbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-	glBufferData(GL_ARRAY_BUFFER, normalarray.size() * sizeof(glm::vec3), &normalarray[0], GL_STATIC_DRAW);
+	/*VERTEX BUFFER*/
+	glGenBuffers(1, &vertexBuffer);//generate 1 buffer and the identifier in vertexBuffer
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	//give the vertices to OpenGL
+	int vertexBufferSize = vertexarray.size() * sizeof(vertexarray[0]);// sizeof(g_vertex_buffer_data);
+	std::cout << "SIZE:" << vertexBufferSize << endl;
+	glBufferData(GL_ARRAY_BUFFER, vertexBufferSize, &vertexarray[0], GL_STATIC_DRAW);
 
-	textureID = loadDDS("uvmap.dds");
+	/*COLOR BUFFER*/
+
+	//glGenBuffers(1, &colorBuffer);
+	//glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+	int colorBufferSize = uvarray.size() * sizeof(uvarray[0]); //sizeof(g_color_buffer_data)
+	//glBufferData(GL_ARRAY_BUFFER, colorBufferSize, &uvarray[0], GL_STATIC_DRAW);
+
+	/*TEXTURE BUFFER*/
+		textureID = loadBMP_custom("number.bmp");
+	//textureID = loadDDS("uvmap.dds");
 
 	glGenBuffers(1, &textureID);
 	glBindBuffer(GL_ARRAY_BUFFER, textureID);
-	glBufferData(GL_ARRAY_BUFFER, uvarray.size(), &uvarray[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, colorBufferSize, &uvarray[0], GL_STATIC_DRAW);
+
+	/*normal buffer*/
+	/*VERTEX BUFFER*/
+	glGenBuffers(1, &normalbuffer);//generate 1 buffer and the identifier in vertexBuffer
+	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+	//give the vertices to OpenGL
+	int normalBufferSize = normalarray.size() * sizeof(normalarray[0]);// sizeof(g_vertex_buffer_data);
+	std::cout << "SIZE:" << normalBufferSize << endl;
+	glBufferData(GL_ARRAY_BUFFER, vertexBufferSize, &normalarray[0], GL_STATIC_DRAW);
+
 
 }
 
@@ -335,6 +358,13 @@ void handleKeyPress() {
 
 }
 
+void getUniformsLocationFromShader() {
+	matrixID = glGetUniformLocation(programID, "MVP");
+	viewMatrixID = glGetUniformLocation(programID, "V");
+	modelMatrixID = glGetUniformLocation(programID, "M");
+	lightID = glGetUniformLocation(programID, "LightPosition_worldspace");
+
+}
 
 int main() {
 
@@ -352,7 +382,7 @@ int main() {
 		return -1;
 	}
 	std::cout << "window init" << endl;
-	initBufferV1();
+	initBufferV2();
 
 	std::cout << "vertex init" << vertexArrayID << " " << vertexBuffer << endl;
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
@@ -361,11 +391,15 @@ int main() {
 	initShader();
 	glUseProgram(programID);
 
-	matrixID = glGetUniformLocation(programID, "MVP");
+	getUniformsLocationFromShader();
+
 	std::cout << "matrixID: " << matrixID << ", programID: " << programID << endl;
 	//reset ke tengah
 	glfwSetCursorPos(window, WIN_W / 2, WIN_H / 2);
 	cout << "vertex size: " << vertexarray.size() << endl;
+
+	vec3 lightPos(4, 4, 4);
+
 	do {
 		glEnable(GL_DEPTH_TEST); // z component
 		glDepthFunc(GL_LESS); //accept fragment if it closer to the camera than the former one
@@ -395,7 +429,9 @@ int main() {
 
 		//send to currently bound shader
 		glUniformMatrix4fv(matrixID, 1, GL_FALSE, &mvp[0][0]);
-
+		glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, &model[0][0]);
+		glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &view[0][0]);
+		glUniform3f(lightID, lightPos.x, lightPos.y, lightPos.z);
 
 		/*1ST ATTRIBUTE BUFFER : VERTICES*/
 		int size = 3;
@@ -409,17 +445,22 @@ int main() {
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 		glVertexAttribPointer(0, size, type, isNormalized, stride, (void *)arrayBufferOffset);
 
-		/*2ND ATRIBUTE BUFFER: */
+		/*2ND ATRIBUTE BUFFER: UV*/
 		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, textureID);
 		int coordSize = 2;
 		glVertexAttribPointer(1, coordSize, type, isNormalized, stride, (void *)arrayBufferOffset);
 		
-		
+		/*3RD ATRIBUTE BUFFER: NORMALS */
+		glEnableVertexAttribArray(2);
+		glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+		int normalCoordSize = 3;
+		glVertexAttribPointer(2, normalCoordSize, type, isNormalized, stride, (void *)arrayBufferOffset);
+
 		/*DRAW*/
 		//triangle
 		GLint startingVertex = 0;
-		GLsizei totalVertices =  sizeof(g_vertex_buffer_data) / sizeof(g_vertex_buffer_data[0]);
+		GLsizei totalVertices = vertexarray.size();//  sizeof(g_vertex_buffer_data) / sizeof(g_vertex_buffer_data[0]);
 		glDrawArrays(GL_TRIANGLES, startingVertex, totalVertices);
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
