@@ -260,7 +260,7 @@ GLuint loadDDS(const char * imagepath)
 	return textureID;
 }
 
-bool loadOBJ(
+bool loadObjectFromFile(
 	const char * path,
 	std::vector < glm::vec3 > & out_vertices,
 	std::vector < glm::vec2 > & out_uvs,

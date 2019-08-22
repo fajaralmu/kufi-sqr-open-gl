@@ -127,15 +127,26 @@
     <Image Include="uvtemplate.dds" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="BaseEntity.cpp" />
+    <ClCompile Include="BufferDatascpp.cpp" />
+    <ClCompile Include="AppObject.cpp" />
+    <ClCompile Include="EntityRole.hpp" />
     <ClCompile Include="ResourceLoader.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="VectorUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="fragmentShader.txt" />
     <Text Include="vertexShader.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="BaseEntity.h" />
     <ClInclude Include="common\ResourceLoader.hpp" />
+    <ClInclude Include="AppObject.h" />
+    <ClInclude Include="libs.hpp" />
+    <ClInclude Include="VectorUtil.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

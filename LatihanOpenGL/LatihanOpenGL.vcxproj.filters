@@ -12,31 +12,40 @@
     <Filter Include="shader">
       <UniqueIdentifier>{6d419475-c22e-425a-b259-9f3354d98356}</UniqueIdentifier>
     </Filter>
-    <Filter Include="h">
-      <UniqueIdentifier>{a002ff9c-66b7-42dc-b347-2957e75836de}</UniqueIdentifier>
-    </Filter>
     <Filter Include="common">
       <UniqueIdentifier>{2d9ebc20-0b20-4e68-a22b-bff79a3af0ca}</UniqueIdentifier>
     </Filter>
     <Filter Include="resources">
       <UniqueIdentifier>{ad42274a-b0a1-4ccf-ba56-c72c21c10ec6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="entity">
+      <UniqueIdentifier>{f07551d9-72ec-4602-b2ab-c2b73e988dca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="proc">
+      <UniqueIdentifier>{f245ec04-146a-4c0f-af3c-7a73acad3a1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="oldFile">
+      <UniqueIdentifier>{eb0a1629-2327-4a62-bb18-fac0a31b8e37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="asset">
+      <UniqueIdentifier>{a002ff9c-66b7-42dc-b347-2957e75836de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="material_ray.png">
-      <Filter>h</Filter>
+      <Filter>asset</Filter>
     </Image>
     <Image Include="uvtemplate.dds">
-      <Filter>h</Filter>
+      <Filter>asset</Filter>
     </Image>
     <Image Include="uvtemplate.bmp">
-      <Filter>h</Filter>
+      <Filter>asset</Filter>
     </Image>
     <Image Include="number.bmp">
-      <Filter>h</Filter>
+      <Filter>asset</Filter>
     </Image>
     <Image Include="uvmap.DDS">
-      <Filter>h</Filter>
+      <Filter>asset</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
@@ -45,6 +54,24 @@
     </ClCompile>
     <ClCompile Include="ResourceLoader.cpp">
       <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseEntity.cpp">
+      <Filter>entity</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferDatascpp.cpp">
+      <Filter>oldFile</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorUtil.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="AppObject.cpp">
+      <Filter>entity</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityRole.hpp">
+      <Filter>entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>proc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +85,21 @@
   <ItemGroup>
     <ClInclude Include="common\ResourceLoader.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="libs.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseEntity.h">
+      <Filter>entity</Filter>
+    </ClInclude>
+    <ClInclude Include="AppObject.h">
+      <Filter>entity</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorUtil.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>proc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
