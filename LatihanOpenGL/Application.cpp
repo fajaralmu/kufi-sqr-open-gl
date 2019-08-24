@@ -7,6 +7,9 @@ namespace App {
 
 	Application::Application()
 	{
+		xpos = WIN_W / 2;
+		ypos = WIN_H / 2;
+
 	}
 
 	Application::~Application()
@@ -149,6 +152,11 @@ namespace App {
 		bool pressLeft = glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS;
 		bool pressO = glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS;
 		bool pressSpace = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
+		bool pressPageUp = glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS;
+		bool pressPageDown = glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS;
+		bool pressRALt = glfwGetKey(window, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS;
+		bool pressRCtrl = glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS;
+
 
 		bool pressW = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
 		bool pressS = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
@@ -160,18 +168,24 @@ namespace App {
 		bool pressC = glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS;
 
 		if (init) {
-			glfwGetCursorPos(window, &xpos, &ypos);
+		//	glfwGetCursorPos(window, &xpos, &ypos);
+			cout << xpos << "," << ypos << endl;
 			init = false;
 		}
 		//reset ke tengah
-		//	glfwSetCursorPos(window, WIN_W / 2, WIN_H / 2);
+		ypos = WIN_H / 2; xpos = WIN_W / 2;
 
+		int incrementBy = 20 + (pressSpace ? 20 : 0);
+
+		ypos += (pressPageUp ? incrementBy : 0) + (pressPageDown ? -incrementBy : 0);
+		xpos += (pressRALt ? incrementBy : 0) + (pressRCtrl ? -incrementBy : 0);
+			
 		//compute orientation
 		horizontalAngle += mouseSpeed * deltaTime * float(WIN_W / 2 - xpos);
-		//std::cout << "horizontal angle: " << horizontalAngle << endl;
 		verticalAngle += mouseSpeed * deltaTime * float(WIN_H / 2 - ypos);
-		//std::cout << xpos << "," << ypos << endl;
-		direction = vec3(
+		/*std::cout << horizontalAngle<< ", H increment: " << (mouseSpeed * deltaTime * float(WIN_W / 2 - xpos));
+		std::cout << verticalAngle<< ", V increment: " << (mouseSpeed * deltaTime * float(WIN_H / 2 - ypos)) << endl;
+		*/direction = vec3(
 			cos(verticalAngle) * sin(horizontalAngle),
 			sin(verticalAngle),
 			cos(verticalAngle) * cos(horizontalAngle)
@@ -203,6 +217,12 @@ namespace App {
 			if (pressLeft) {
 				obj->position -= rightMove * deltaTime *speed;
 			}
+			/*if (pressPageUp) {
+				obj->position -= rightMove * deltaTime *speed;
+			}
+			if (pressPageDown) {
+				obj->position -= rightMove * deltaTime *speed;
+			}*/
 
 			if (!isMain) continue;
 
@@ -333,7 +353,7 @@ namespace App {
 					glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, &model[0][0]);
 					glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &view[0][0]);
 					glUniform3f(lightID, lightPos.x, lightPos.y, lightPos.z);
-					if (obj->theRole == MAIN) cout << "kakaka " << obj->id << ". " << obj->textureID << endl;
+//					if (obj->theRole == MAIN) cout << "kakaka " << obj->id << ". " << obj->textureID << endl;
 
 					glBindBuffer(GL_ARRAY_BUFFER, obj->vertexBufferID);
 					glVertexAttribPointer(0, vertexCoordSize, type, isNormalized, stride, (void *)arrayBufferOffset);
