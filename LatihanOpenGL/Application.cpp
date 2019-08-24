@@ -70,13 +70,13 @@ namespace App {
 	void Application::initBufferV2()
 	{
 		try {
-			for each (AppObject* obj in objects) {
-				if (obj->initTexture == false)
-				{
-					//obj->loadTexture();
-					obj->initTexture = true;
-				}
-			}
+			//for each (AppObject* obj in objects) {
+			//	if (obj->initTexture == false)
+			//	{
+			//		//obj->loadTexture();
+			//		obj->initTexture = true;
+			//	}
+			//}
 
 
 			for each (AppObject* obj in objects) {
@@ -199,7 +199,7 @@ namespace App {
 			}
 
 			//object operation
-			if (pressN && c > 100) {
+			if (pressN && c > 50) {
 
 				AppObject * newObj;
 				newObj = new AppObject("cube.obj", "number.bmp");
@@ -210,9 +210,10 @@ namespace App {
 				c = 0;
 				break;
 			}
-			if (pressC && c > 100) {
-				obj->textureID = (textureIDs[texIdx]);
-				//initBufferV2();
+			if (pressC && c > 50) {
+				if (obj->textureID == worldTexID)obj->textureID = mainTexID;
+				else obj->textureID =  (textureIDs[texIdx]);
+				obj->initializeBuffer();
 				cout << "pressC" << endl;
 				c = 0;
 				texIdx++;
@@ -303,7 +304,7 @@ namespace App {
 					glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, &model[0][0]);
 					glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &view[0][0]);
 					glUniform3f(lightID, lightPos.x, lightPos.y, lightPos.z);
-					cout << "kakaka " << obj->id << ". " << obj->textureID << endl;
+					if(obj->theRole == MAIN) cout << "kakaka " << obj->id << ". " << obj->textureID << endl;
 
 					glBindBuffer(GL_ARRAY_BUFFER, obj->vertexBufferID);
 					glVertexAttribPointer(0, vertexCoordSize, type, isNormalized, stride, (void *)arrayBufferOffset);
