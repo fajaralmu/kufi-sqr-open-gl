@@ -68,7 +68,11 @@ GLuint loadBMP_custom(const char * imagepath) {
 	//generate one openGL texture
 	GLuint textureID;
 	int size = 1;
+	glGenBuffers(1, &textureID);
+	cout << "glGenBuffers: " << textureID << endl;
 	glGenTextures(size, &textureID);
+	cout << "glGenTextures: " << textureID << endl;
+
 	glBindTexture(GL_TEXTURE_2D, textureID); //bind the newly created texture
 
 	//give image to openGL
