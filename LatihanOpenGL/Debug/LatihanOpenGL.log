@@ -1,12 +1,14 @@
 ﻿  Application.cpp
 e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.h(34): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(30): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(31): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(112): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(268): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(62): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(63): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(64): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(116): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(272): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
   Generating Code...
-  Skipping... (no relevant changes detected)
+  Compiling...
   Main.cpp
+e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.h(34): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Generating Code...
   LatihanOpenGL.vcxproj -> E:\Visual Studio 2015\Projects\LatihanOpenGLv2\Debug\LatihanOpenGL.exe
   LatihanOpenGL.vcxproj -> E:\Visual Studio 2015\Projects\LatihanOpenGLv2\Debug\LatihanOpenGL.pdb (Partial PDB)
