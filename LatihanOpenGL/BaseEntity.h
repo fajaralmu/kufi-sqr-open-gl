@@ -14,8 +14,9 @@ namespace Entity {
 		BaseEntity();
 		~BaseEntity();
 		virtual void init();
-		virtual void initializeBuffer();
+		virtual void initializeTextureBuffer();
 		void loadVertex();
+		void initializeVertexAndNormalBuffer();
 		//void changeTexture(std::string filePath);
 		bool isCollide(BaseEntity* obj);
 		//virtual void loadTexture();

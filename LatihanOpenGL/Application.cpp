@@ -13,6 +13,7 @@ namespace App {
 	{
 	}
 
+
 	bool App::Application::initWindow()
 	{
 		glfwWindowHint(GLFW_SAMPLES, 4); //4x anti aliasing ->sampling the missing dot on the image
@@ -43,8 +44,13 @@ namespace App {
 		AppObject * objA;
 		mainTexID = loadBMP_custom("main_obj.bmp");
 		worldTexID = loadBMP_custom("number.bmp");
+		glBindBuffer(GL_ARRAY_BUFFER, mainTexID);
+		glBindBuffer(GL_ARRAY_BUFFER, worldTexID);
+
 		for (int i = 0; i < 5; i++) {
 			textureIDs[i] = loadBMP_custom(textureNames[i].c_str());
+			glBindBuffer(GL_ARRAY_BUFFER, textureIDs[i]);
+
 		}
 
 		objA = new AppObject("cube.obj", "main_obj.bmp");
@@ -81,7 +87,8 @@ namespace App {
 
 			for each (AppObject* obj in objects) {
 				if (obj->initBuffer == false) {
-					obj->initializeBuffer();
+					obj->initializeTextureBuffer();
+					obj->initializeVertexAndNormalBuffer();
 					obj->initBuffer = true;
 				}
 			}
@@ -105,6 +112,26 @@ namespace App {
 	void Application::addObject(BaseEntity * obj)
 	{
 		objects.push_back(obj);
+	}
+
+	void Application::handleCollision(BaseEntity* mainObj)
+	{
+		//return;
+		for each (AppObject* obj in objects)
+		{
+			if (obj->theRole == MAIN) continue;
+
+			bool collide = mainObj->isCollide(obj);
+			if (collide) {
+				cout << obj->id << "-COLLIDE " << collide << endl;
+				obj->textureID = mainTexID;
+			//	obj->initializeBuffer();
+			}
+			else {
+				obj->textureID = worldTexID;
+			//	obj->initializeBuffer();
+			}
+		}
 	}
 
 	void Application::handleKeyPress()
@@ -205,15 +232,15 @@ namespace App {
 				newObj = new AppObject("cube.obj", "number.bmp");
 				newObj->position = obj->position;
 				newObj->textureID = worldTexID;
-					addObject(newObj);
+				addObject(newObj);
 				initBufferV2();
 				c = 0;
 				break;
 			}
 			if (pressC && c > 50) {
 				if (obj->textureID == worldTexID)obj->textureID = mainTexID;
-				else obj->textureID =  (textureIDs[texIdx]);
-				obj->initializeBuffer();
+				else obj->textureID = (textureIDs[texIdx]);
+				obj->initializeTextureBuffer();
 				cout << "pressC" << endl;
 				c = 0;
 				texIdx++;
@@ -280,17 +307,19 @@ namespace App {
 			try {
 				for each (AppObject* obj in objects)
 				{
+
+					if (obj->theRole == MAIN) {
+						handleCollision(obj);
+					}
+
 					string name = "OBJ-" + to_string(obj->id);
 					//if (obj->theRole == MAIN)				printVector(obj->position, name);
-
 					//model at origin
 					mat4 model = glm::mat4(1.0f);
 					//ViewModelProjection : mult of 3 matrices
 					mat4 projection = glm::perspective(glm::radians(angle), aspectRatio, nearClippingPane, farClippingPane);
-
 					//camera matrix
 					mat4 view = glm::lookAt(obj->position, obj->position + direction, up);
-
 					//std::cout << position.x << "-" << position.y << "-" << position.z << "-" << direction.b << "-" << direction.g << endl;
 					mat4 mvp = projection * view * model;
 
@@ -304,7 +333,7 @@ namespace App {
 					glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, &model[0][0]);
 					glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &view[0][0]);
 					glUniform3f(lightID, lightPos.x, lightPos.y, lightPos.z);
-					if(obj->theRole == MAIN) cout << "kakaka " << obj->id << ". " << obj->textureID << endl;
+					if (obj->theRole == MAIN) cout << "kakaka " << obj->id << ". " << obj->textureID << endl;
 
 					glBindBuffer(GL_ARRAY_BUFFER, obj->vertexBufferID);
 					glVertexAttribPointer(0, vertexCoordSize, type, isNormalized, stride, (void *)arrayBufferOffset);
