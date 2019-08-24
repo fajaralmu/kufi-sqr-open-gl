@@ -31,11 +31,11 @@ namespace Entity {
 		
 	}
 
-	void BaseEntity::loadVertex()
+	void BaseEntity::intializeVertex()
 	{
 		std::string vp = vertPath;
-		//VertexObj vertObj = loadObjectFromFile(vp.c_str());// , this->vertexArray, uvArray, normalArray);
-		//setVertexObj(vertObj);
+		VertexObj vertObj = loadObjectFromFile(vp.c_str());// , this->vertexArray, uvArray, normalArray);
+		setVertexObj(vertObj);
 		float width, height, tick;
 		if (1) {
 			width = calculateDimension(0, vertexArray);

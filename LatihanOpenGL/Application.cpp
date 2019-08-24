@@ -47,9 +47,9 @@ namespace App {
 		AppObject * objA;
 		mainTexID = loadBMP_custom("main_obj.bmp");
 		worldTexID = loadBMP_custom("number.bmp");
-		mainVertObj = loadObjectFromFile("cube.obj");
-		worldVertObj = loadObjectFromFile("cube.obj");
-		
+	/*	mainVertObj = loadObjectFromFile("cube.obj");
+		worldVertObj = loadObjectFromFile("cube.obj");*/
+
 		glBindBuffer(GL_ARRAY_BUFFER, mainTexID);
 		glBindBuffer(GL_ARRAY_BUFFER, worldTexID);
 		/*glBindBuffer(GL_ARRAY_BUFFER, mainVertObj.vertexID);
@@ -65,8 +65,8 @@ namespace App {
 		objA = new AppObject("cube.obj", "main_obj.bmp");
 		objA->theRole = Entity::MAIN;
 		objA->textureID = mainTexID;
-		objA->setVertexObj(mainVertObj);
-		objA->loadVertex();
+		//objA->setVertexObj(mainVertObj);
+		objA->intializeVertex();
 		objects.push_back(objA);
 		//init x count objs
 		for (int x = 0; x < xCount; x++)
@@ -76,8 +76,8 @@ namespace App {
 					AppObject * obj;
 					obj = new AppObject("cube.obj", "number.bmp");
 					obj->textureID = worldTexID;
-					obj->setVertexObj(worldVertObj);
-					obj->loadVertex();
+					//obj->setVertexObj(worldVertObj);
+					obj->intializeVertex();
 					obj->position.x = x * (obj->dimension.x + 0.3);
 					obj->position.y = y * (obj->dimension.y + 0.3);
 					obj->position.z += z * (obj->dimension.z + 0.3);
@@ -129,7 +129,19 @@ namespace App {
 		objects.push_back(obj);
 	}
 
-	void Application::handleCollision(BaseEntity* mainObj)
+	void Application::removeObject(BaseEntity * obj)
+	{
+		for (int i = 0; i < objects.size(); i++)
+		{
+			if (obj->id == objects[i]->id)
+			{
+				objects.erase(objects.begin() + i);
+				break;
+			}
+		}
+	}
+
+	bool Application::handleCollision(BaseEntity* mainObj)
 	{
 		//return;
 		for each (AppObject* obj in objects)
@@ -138,15 +150,21 @@ namespace App {
 
 			bool collide = mainObj->isCollide(obj);
 			if (collide) {
-				cout << obj->id << "-COLLIDE " << collide << endl;
+			//	cout << obj->id << "-COLLIDE " << collide << endl;
 				obj->textureID = mainTexID;
-			//	obj->initializeBuffer();
+				//	obj->initializeBuffer();
+				if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS) {
+					removeObject(obj);
+					return true;
+					break;
+				}
 			}
 			else {
 				obj->textureID = worldTexID;
-			//	obj->initializeBuffer();
+				//	obj->initializeBuffer();
 			}
 		}
+		return false;
 	}
 
 	void Application::handleKeyPress()
@@ -180,7 +198,7 @@ namespace App {
 		bool pressC = glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS;
 
 		if (init) {
-		//	glfwGetCursorPos(window, &xpos, &ypos);
+			//	glfwGetCursorPos(window, &xpos, &ypos);
 			cout << xpos << "," << ypos << endl;
 			init = false;
 		}
@@ -191,7 +209,7 @@ namespace App {
 
 		ypos += (pressPageUp ? incrementBy : 0) + (pressPageDown ? -incrementBy : 0);
 		xpos += (pressRALt ? incrementBy : 0) + (pressRCtrl ? -incrementBy : 0);
-			
+
 		//compute orientation
 		horizontalAngle += mouseSpeed * deltaTime * float(WIN_W / 2 - xpos);
 		verticalAngle += mouseSpeed * deltaTime * float(WIN_H / 2 - ypos);
@@ -264,8 +282,8 @@ namespace App {
 				newObj = new AppObject("cube.obj", "number.bmp");
 				newObj->position = obj->position;
 				newObj->textureID = worldTexID;
-				newObj->setVertexObj(worldVertObj);
-				newObj->loadVertex();
+				//newObj->setVertexObj(worldVertObj);
+				newObj->intializeVertex();
 				addObject(newObj);
 				initBufferV2();
 				c = 0;
@@ -275,6 +293,7 @@ namespace App {
 				if (obj->textureID == worldTexID)obj->textureID = mainTexID;
 				else obj->textureID = (textureIDs[texIdx]);
 				obj->initializeTextureBuffer();
+				obj->initializeVertexAndNormalBuffer();
 				cout << "pressC" << endl;
 				c = 0;
 				texIdx++;
@@ -343,7 +362,8 @@ namespace App {
 				{
 
 					if (obj->theRole == MAIN) {
-						handleCollision(obj);
+					 bool updateObjList =	handleCollision(obj);
+					 if (updateObjList) break;
 					}
 
 					string name = "OBJ-" + to_string(obj->id);
@@ -367,7 +387,7 @@ namespace App {
 					glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, &model[0][0]);
 					glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &view[0][0]);
 					glUniform3f(lightID, lightPos.x, lightPos.y, lightPos.z);
-//					if (obj->theRole == MAIN) cout << "kakaka " << obj->id << ". " << obj->textureID << endl;
+					//					if (obj->theRole == MAIN) cout << "kakaka " << obj->id << ". " << obj->textureID << endl;
 
 					glBindBuffer(GL_ARRAY_BUFFER, obj->vertexBufferID);
 					glVertexAttribPointer(0, vertexCoordSize, type, isNormalized, stride, (void *)arrayBufferOffset);

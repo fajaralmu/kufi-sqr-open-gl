@@ -44,9 +44,9 @@ namespace App {
 		//lighting
 		GLuint lightID, modelMatrixID, viewMatrixID;
 		vec3 lightPos= vec3(4, 4, 4);
-		int xCount = 5;
+		int xCount = 3;
 		int yCount = 1;
-		int zCount = 6;
+		int zCount = 2;
 		int vertexCoordSize = 3;
 		int uvCoordSize = 2;
 		int normalCoordSize = 3;
@@ -57,15 +57,16 @@ namespace App {
 		GLuint textureIDs[5];;
 		GLuint mainTexID;
 		GLuint worldTexID;
-		VertexObj mainVertObj;
-		VertexObj worldVertObj;
-		void handleCollision(BaseEntity* mainObj);
+		/*VertexObj mainVertObj;
+		VertexObj worldVertObj;*/
+		bool handleCollision(BaseEntity* mainObj);
 		bool initWindow();
 		void initBufferV2();
 
 		void initShader();
 
 		void addObject(BaseEntity * obj);
+		void removeObject(BaseEntity * obj);
 
 		double  xpos = 0, ypos = 0;
 		bool init = true;
