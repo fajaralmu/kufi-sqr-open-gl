@@ -57,6 +57,8 @@ namespace App {
 		GLuint textureIDs[5];;
 		GLuint mainTexID;
 		GLuint worldTexID;
+		VertexObj mainVertObj;
+		VertexObj worldVertObj;
 		void handleCollision(BaseEntity* mainObj);
 		bool initWindow();
 		void initBufferV2();

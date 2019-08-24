@@ -17,7 +17,7 @@ namespace Entity {
 
 	void BaseEntity::init()
 	{
-		loadVertex(); //for computing dimension
+//		loadVertex(); //for computing dimension
 		initTexture = false;
 		initBuffer = false;
 	}
@@ -28,15 +28,16 @@ namespace Entity {
 		glBindBuffer(GL_ARRAY_BUFFER, textureID);
 		int colorBufferSize = uvArray.size() * sizeof(vec2); //sizeof(g_color_buffer_data)
 		glBufferData(GL_ARRAY_BUFFER, colorBufferSize, &uvArray[0], GL_STATIC_DRAW);
-
+		
 	}
 
 	void BaseEntity::loadVertex()
 	{
 		std::string vp = vertPath;
-		bool res = loadObjectFromFile(vp.c_str(), this->vertexArray, uvArray, normalArray);
+		//VertexObj vertObj = loadObjectFromFile(vp.c_str());// , this->vertexArray, uvArray, normalArray);
+		//setVertexObj(vertObj);
 		float width, height, tick;
-		if (res) {
+		if (1) {
 			width = calculateDimension(0, vertexArray);
 			height = calculateDimension(1, vertexArray);
 			tick = calculateDimension(2, vertexArray);
@@ -50,9 +51,9 @@ namespace Entity {
 
 	void BaseEntity::initializeVertexAndNormalBuffer()
 	{
+		
 		glGenVertexArrays(1, &vertexArrayID);
 		glBindVertexArray(vertexArrayID);
-		glGenBuffers(1, &vertexBufferID);//generate 1 buffer and the identifier in vertexBuffer
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 		int vertexBufferSize = vertexArray.size() * sizeof(vec3);// sizeof(g_vertex_buffer_data);
 		glBufferData(GL_ARRAY_BUFFER, vertexBufferSize, &vertexArray[0], GL_STATIC_DRAW);//give the vertices to OpenGL
@@ -86,6 +87,14 @@ namespace Entity {
 		
 
 		return collide;
+	}
+
+	void BaseEntity::setVertexObj(VertexObj vertexOBJ)
+	{
+		normalArray = vertexOBJ.normalsArray;
+		uvArray = vertexOBJ.uvsArray;
+		vertexArray = vertexOBJ.verticesArray;
+		vertexBufferID = vertexOBJ.vertexID;
 	}
 
 	//void BaseEntity::loadTexture()

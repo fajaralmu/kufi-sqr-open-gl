@@ -47,8 +47,14 @@ namespace App {
 		AppObject * objA;
 		mainTexID = loadBMP_custom("main_obj.bmp");
 		worldTexID = loadBMP_custom("number.bmp");
+		mainVertObj = loadObjectFromFile("cube.obj");
+		worldVertObj = loadObjectFromFile("cube.obj");
+		
 		glBindBuffer(GL_ARRAY_BUFFER, mainTexID);
 		glBindBuffer(GL_ARRAY_BUFFER, worldTexID);
+		/*glBindBuffer(GL_ARRAY_BUFFER, mainVertObj.vertexID);
+		glBindBuffer(GL_ARRAY_BUFFER, worldVertObj.vertexID);*/
+
 
 		for (int i = 0; i < 5; i++) {
 			textureIDs[i] = loadBMP_custom(textureNames[i].c_str());
@@ -59,6 +65,8 @@ namespace App {
 		objA = new AppObject("cube.obj", "main_obj.bmp");
 		objA->theRole = Entity::MAIN;
 		objA->textureID = mainTexID;
+		objA->setVertexObj(mainVertObj);
+		objA->loadVertex();
 		objects.push_back(objA);
 		//init x count objs
 		for (int x = 0; x < xCount; x++)
@@ -68,9 +76,12 @@ namespace App {
 					AppObject * obj;
 					obj = new AppObject("cube.obj", "number.bmp");
 					obj->textureID = worldTexID;
+					obj->setVertexObj(worldVertObj);
+					obj->loadVertex();
 					obj->position.x = x * (obj->dimension.x + 0.3);
 					obj->position.y = y * (obj->dimension.y + 0.3);
 					obj->position.z += z * (obj->dimension.z + 0.3);
+
 					objects.push_back(obj);
 				}
 		return true;
@@ -87,7 +98,7 @@ namespace App {
 			//	}
 			//}
 
-
+			cout << "init buffer" << endl;
 			for each (AppObject* obj in objects) {
 				if (obj->initBuffer == false) {
 					obj->initializeTextureBuffer();
@@ -95,6 +106,7 @@ namespace App {
 					obj->initBuffer = true;
 				}
 			}
+			cout << "==init buffer" << endl;
 		}
 		catch (exception& e) {
 			cout << ("Exception :") << e.what() << endl;
@@ -252,6 +264,8 @@ namespace App {
 				newObj = new AppObject("cube.obj", "number.bmp");
 				newObj->position = obj->position;
 				newObj->textureID = worldTexID;
+				newObj->setVertexObj(worldVertObj);
+				newObj->loadVertex();
 				addObject(newObj);
 				initBufferV2();
 				c = 0;

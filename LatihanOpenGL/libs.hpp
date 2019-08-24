@@ -13,4 +13,14 @@
 #include <glm.hpp>
 #include <gtx/transform.hpp>
 #include <gtc/matrix_transform.hpp>
+#include <map>
+#include <vector>
+
+struct VertexObj {
+	GLuint vertexID;
+	std::vector < glm::vec3 > verticesArray;
+	std::vector < glm::vec2 > uvsArray;
+	std::vector < glm::vec3 > normalsArray;
+
+};
 

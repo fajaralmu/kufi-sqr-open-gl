@@ -19,6 +19,7 @@ namespace Entity {
 		void initializeVertexAndNormalBuffer();
 		//void changeTexture(std::string filePath);
 		bool isCollide(BaseEntity* obj);
+		void setVertexObj(VertexObj vertexOBJ);
 		//virtual void loadTexture();
 		float calculateDimension(int index, std::vector<glm::vec3> theVector);
 		

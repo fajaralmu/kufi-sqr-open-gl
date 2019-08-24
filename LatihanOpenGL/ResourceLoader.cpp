@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 // Include GLEW. Always include it before gl.h and glfw.h, since it's a bit magic.
 #include <vector>
 #include "common\ResourceLoader.hpp"
@@ -264,12 +265,14 @@ GLuint loadDDS(const char * imagepath)
 	return textureID;
 }
 
-bool loadObjectFromFile(
-	const char * path,
-	std::vector < glm::vec3 > & out_vertices,
-	std::vector < glm::vec2 > & out_uvs,
-	std::vector < glm::vec3 > & out_normals
-) {
+VertexObj loadObjectFromFile(
+	const char * path) {
+	std::vector < glm::vec3 >  out_vertices;
+	std::vector < glm::vec2 >  out_uvs;
+	std::vector < glm::vec3 >  out_normals;
+
+	VertexObj vertexObj = {};
+
 	vector<unsigned int> vertexIndices, uvIndices, normalIndices;
 	vector<vec3> temp_vertices;
 	vector<vec2> temp_uv;
@@ -278,7 +281,7 @@ bool loadObjectFromFile(
 	FILE * file = fopen(path, "r");
 	if (file == NULL) {
 		printf_s("Error opening obj file\n");
-		return false;
+		return vertexObj;
 	}
 
 	while (1) {
@@ -316,7 +319,7 @@ bool loadObjectFromFile(
 				);
 			if (matches != 9) {
 				printf("file cannot be read.. \n");
-				return false;
+				return vertexObj;
 
 			}
 
@@ -357,5 +360,14 @@ bool loadObjectFromFile(
 	}
 	cout << "OK" << endl;
 	fclose(file);
-	return true;
+	GLuint vertexID;
+	glGenBuffers(1, &vertexID);//generate 1 buffer and the identifier in vertexBuffer
+	
+	vertexObj.vertexID = vertexID;
+	vertexObj.uvsArray = out_uvs;
+	vertexObj.normalsArray = out_normals;
+	vertexObj.verticesArray = out_vertices;
+//	cout << out_uvs.size() <<"-" << out_normals.size() << "-" << out_vertices.size() << endl;
+
+	return vertexObj;
 }
