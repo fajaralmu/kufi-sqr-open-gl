@@ -72,6 +72,7 @@ namespace App {
 		//objA->setVertexObj(mainVertObj);
 		objA->intializeVertex();
 		objects.push_back(objA);
+		float padding = 0.0;
 		//init x count objs
 		for (int x = 0; x < xCount; x++)
 			for (int y = 0; y < yCount; y++)
@@ -82,9 +83,9 @@ namespace App {
 					obj->textureID = worldTexID;
 					//obj->setVertexObj(worldVertObj);
 					obj->intializeVertex();
-					obj->position.x = x * (obj->dimension.x + 0.3);
-					obj->position.y = y * (obj->dimension.y + 0.3);
-					obj->position.z += z * (obj->dimension.z + 0.3);
+					obj->position.x = x * (obj->dimension.x + padding);
+					obj->position.y = y * (obj->dimension.y + padding);
+					obj->position.z += z * (obj->dimension.z + padding);
 
 					objects.push_back(obj);
 				}
@@ -150,22 +151,7 @@ namespace App {
 	bool Application::handleCollision(BaseEntity* mainObj)
 	{
 		collideTimer++;
-		//return;
-		//begin mouse
-		double x, y;
-		double xTemp, yTemp;
-		glfwGetCursorPos(window, &x, &y);
-		xTemp = x;
-		yTemp = y;
-
-		x = x / 32 - (WIN_W / 64);
-
-		//	x /= 2.8;
-		x *= -1;
-		y = y / 32 - (WIN_H / 64);
-
-		//	y /= 2.8;
-			//end mouse
+		
 		for each (AppObject* obj in objects)
 		{
 
@@ -236,7 +222,7 @@ namespace App {
 			if ((collide || inPosition || obj->active)) {
 				obj->textureID = mainTexID;
 				//	obj->initializeBuffer();
-				if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS) {
+				if (!obj->active && glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS) {
 					removeObject(obj);
 					return true;
 					break;
@@ -258,7 +244,7 @@ namespace App {
 		return false;
 	}
 
-	void Application::handleKeyPress()
+	void Application::handleMotionKeyPress()
 	{
 		c++;
 		double currentTime = glfwGetTime();
@@ -288,6 +274,7 @@ namespace App {
 		bool pressN = glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS;
 		bool pressC = glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS;
 		bool pressI = glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS;
+		bool pressDel = glfwGetKey(window, GLFW_KEY_DELETE) == GLFW_PRESS;
 
 		if (init) {
 			//	glfwGetCursorPos(window, &xpos, &ypos);
@@ -321,7 +308,13 @@ namespace App {
 		up = glm::cross(rightMove, direction);
 
 
+		if (pressDel) {
+			for each (AppObject* obj in objects) {
+				if(!obj->active)
+					obj->isDeleted = true;
+			}
 
+		}
 		if (pressSpace) {
 			deltaTime *= 3;
 		}
@@ -343,6 +336,7 @@ namespace App {
 			if (pressLeft) {
 				obj->position -= rightMove * deltaTime *speed;
 			}
+			
 			/*if (c > 50)
 				if (inPosition) {
 					cout << "OBj =" << obj->id << " check position TRUE" << endl;
@@ -488,7 +482,7 @@ namespace App {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glClearColor(0, 0, 0.4, 0);
 
-			handleKeyPress();
+			handleMotionKeyPress();
 
 			glEnableVertexAttribArray(0);/*1ST ATTRIBUTE BUFFER : VERTICES*/
 			glEnableVertexAttribArray(1);/*2ND ATRIBUTE BUFFER: UV*/
@@ -496,7 +490,7 @@ namespace App {
 			try {
 				for each (AppObject* obj in objects)
 				{
-
+					if (obj->isDeleted) continue;
 
 
 					string name = "OBJ-" + to_string(obj->id);

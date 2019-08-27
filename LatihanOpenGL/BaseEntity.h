@@ -43,6 +43,7 @@ namespace Entity {
 		bool initTexture = false;
 		bool initBuffer = false;
 		bool active = false;
+		bool isDeleted = false;
 		EntityRole theRole;
 		int id;
 		

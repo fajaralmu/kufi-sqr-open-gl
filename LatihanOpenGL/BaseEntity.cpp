@@ -7,6 +7,7 @@ namespace Entity {
 	BaseEntity::BaseEntity()
 	{
 		this->theRole = WORLD;
+		isDeleted = false;
 		id = Entity::staticID;
 		Entity::staticID++;
 	}

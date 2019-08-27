@@ -48,7 +48,7 @@ namespace App {
 		//lighting
 		GLuint lightID, modelMatrixID, viewMatrixID;
 		vec3 lightPos= vec3(4, 4, 4);
-		int xCount = 23;
+		int xCount = 25;
 		int yCount = 13;
 		int zCount = 1;
 		int vertexCoordSize = 3;
@@ -74,7 +74,7 @@ namespace App {
 
 		double  xpos = 0, ypos = 0;
 		bool init = true;
-		void handleKeyPress();
+		void handleMotionKeyPress();
 		bool initApp();
 		int run();
 		void getUniformsLocationFromShader();
