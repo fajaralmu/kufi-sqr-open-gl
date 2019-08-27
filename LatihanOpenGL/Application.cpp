@@ -32,6 +32,10 @@ namespace App {
 
 			return false;
 		}
+		//	glfwMakeContextCurrent(window); // <-- make the context current before glViewport
+
+			//glViewport(0, 0, WIN_W, WIN_H);
+
 		std::cout << ("Window created.. ") << endl;
 		glfwMakeContextCurrent(window); //Initialize GLEW
 		glewExperimental = true;//Needed in core profile
@@ -47,8 +51,8 @@ namespace App {
 		AppObject * objA;
 		mainTexID = loadBMP_custom("main_obj.bmp");
 		worldTexID = loadBMP_custom("number.bmp");
-	/*	mainVertObj = loadObjectFromFile("cube.obj");
-		worldVertObj = loadObjectFromFile("cube.obj");*/
+		/*	mainVertObj = loadObjectFromFile("cube.obj");
+			worldVertObj = loadObjectFromFile("cube.obj");*/
 
 		glBindBuffer(GL_ARRAY_BUFFER, mainTexID);
 		glBindBuffer(GL_ARRAY_BUFFER, worldTexID);
@@ -141,16 +145,95 @@ namespace App {
 		}
 	}
 
+	int collideTimer = 0;
+
 	bool Application::handleCollision(BaseEntity* mainObj)
 	{
+		collideTimer++;
 		//return;
+		//begin mouse
+		double x, y;
+		double xTemp, yTemp;
+		glfwGetCursorPos(window, &x, &y);
+		xTemp = x;
+		yTemp = y;
+
+		x = x / 32 - (WIN_W / 64);
+
+		//	x /= 2.8;
+		x *= -1;
+		y = y / 32 - (WIN_H / 64);
+
+		//	y /= 2.8;
+			//end mouse
 		for each (AppObject* obj in objects)
 		{
-			if (obj->theRole == MAIN) continue;
+
+			//mouse
+			double x, y;
+			double xTemp, yTemp;
+			glfwGetCursorPos(window, &x, &y);
+
+			//obj coord on viewport
+			GLdouble model_view[16];
+			glGetDoublev(GL_MODELVIEW_MATRIX, model_view);
+			GLdouble projection_mat[16];
+			glGetDoublev(GL_PROJECTION_MATRIX, projection_mat);
+			GLint viewPort[4];
+			glGetIntegerv(GL_VIEWPORT, viewPort);
+
+			float windowCoordinate[3];
+			//
+			float windowCoordinateLT[3];
+			float windowCoordinateLB[3];
+			float windowCoordinateRT[3];
+			float windowCoordinateRB[3];
+
+			int res = glhProjectf(obj->position.x, obj->position.y, obj->position.z,
+				model_view, projection_mat, viewPort, windowCoordinate);
+			//
+			float halfDimensionX = obj->dimension.x / 2;
+			float halfDimensionY = obj->dimension.y / 2;
+			int resRB = glhProjectf(obj->position.x - halfDimensionX, obj->position.y + halfDimensionY, obj->position.z,
+				model_view, projection_mat, viewPort, windowCoordinateRB);
+			int resRT = glhProjectf(obj->position.x - halfDimensionX, obj->position.y - halfDimensionY, obj->position.z,
+				model_view, projection_mat, viewPort, windowCoordinateRT);
+			int resLB = glhProjectf(obj->position.x + halfDimensionX, obj->position.y + halfDimensionY, obj->position.z,
+				model_view, projection_mat, viewPort, windowCoordinateLB);
+			int resLT = glhProjectf(obj->position.x + halfDimensionX, obj->position.y - halfDimensionY, obj->position.z,
+				model_view, projection_mat, viewPort, windowCoordinateLT);
+
+			vec3 winCoord = vec3(windowCoordinate[0], windowCoordinate[1], windowCoordinate[2]);
+
+			vec3 winCoordLT = vec3(windowCoordinateLT[0], windowCoordinateLT[1], windowCoordinateLT[2]);
+			vec3 winCoordLB = vec3(windowCoordinateLB[0], windowCoordinateLB[1], windowCoordinateLB[2]);
+			vec3 winCoordRT = vec3(windowCoordinateRT[0], windowCoordinateRT[1], windowCoordinateRT[2]);
+			vec3 winCoordRB = vec3(windowCoordinateRB[0], windowCoordinateRB[1], windowCoordinateRB[2]);
+
+			float xAppWin = 200 + x / 2;
+			float yAppWin = 180 + (WIN_H - y) / 2.6;
+
+			bool inPosition = obj->inPosition(xAppWin, yAppWin, winCoordLT, winCoordLB, winCoordRT, winCoordRB);
+
+			if (obj->theRole == MAIN) {
+				if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+				{
+					printVector(winCoord, "===OBJ POS GLUPROJ CENTER");
+					printVector(winCoordLT, "===OBJ POS GLUPROJ LT");
+					printVector(winCoordLB, "===OBJ POS GLUPROJ LB");
+					printVector(winCoordRT, "===OBJ POS GLUPROJ RT");
+					printVector(winCoordRB, "===OBJ POS GLUPROJ RB");
+					printVector(vec3(xAppWin, yAppWin, 0), "===MOUSE POS");
+					cout << "IN POSITION : " << inPosition << endl;
+					if (x >= winCoordLT.x && x <= winCoordRT.x) cout << "ok1" << endl;
+
+					if (y <= winCoordLT.y &&y >= winCoordRB.y) cout << "ok2" << endl;
+				}
+				continue;
+			}
 
 			bool collide = mainObj->isCollide(obj);
-			if (collide) {
-			//	cout << obj->id << "-COLLIDE " << collide << endl;
+			if ((collide || inPosition || obj->active)) {
 				obj->textureID = mainTexID;
 				//	obj->initializeBuffer();
 				if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS) {
@@ -158,6 +241,14 @@ namespace App {
 					return true;
 					break;
 				}
+				if (collideTimer > 20 && inPosition && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+					collideTimer = 0;
+					cout << obj->id << " set active :" << !obj->active << " " << collideTimer << endl;
+					obj->active = !obj->active;
+					//return true;
+			//		break;
+				}
+
 			}
 			else {
 				obj->textureID = worldTexID;
@@ -186,8 +277,8 @@ namespace App {
 		bool pressPageDown = glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS;
 		bool pressRALt = glfwGetKey(window, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS;
 		bool pressRCtrl = glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS;
-
-
+		bool pressENter = glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS;
+		bool pressBackSpace = glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS;
 		bool pressW = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
 		bool pressS = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
 		bool pressA = glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS;
@@ -196,6 +287,7 @@ namespace App {
 		bool pressE = glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS;
 		bool pressN = glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS;
 		bool pressC = glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS;
+		bool pressI = glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS;
 
 		if (init) {
 			//	glfwGetCursorPos(window, &xpos, &ypos);
@@ -205,7 +297,7 @@ namespace App {
 		//reset ke tengah
 		ypos = WIN_H / 2; xpos = WIN_W / 2;
 
-		int incrementBy = 20 + (pressSpace ? 20 : 0);
+		int incrementBy = 30 + (pressSpace ? 30 : 0);
 
 		ypos += (pressPageUp ? incrementBy : 0) + (pressPageDown ? -incrementBy : 0);
 		xpos += (pressRALt ? incrementBy : 0) + (pressRCtrl ? -incrementBy : 0);
@@ -213,6 +305,7 @@ namespace App {
 		//compute orientation
 		horizontalAngle += mouseSpeed * deltaTime * float(WIN_W / 2 - xpos);
 		verticalAngle += mouseSpeed * deltaTime * float(WIN_H / 2 - ypos);
+
 		/*std::cout << horizontalAngle<< ", H increment: " << (mouseSpeed * deltaTime * float(WIN_W / 2 - xpos));
 		std::cout << verticalAngle<< ", V increment: " << (mouseSpeed * deltaTime * float(WIN_H / 2 - ypos)) << endl;
 		*/direction = vec3(
@@ -227,13 +320,16 @@ namespace App {
 		);
 		up = glm::cross(rightMove, direction);
 
+
+
 		if (pressSpace) {
-			deltaTime *= 2;
+			deltaTime *= 3;
 		}
 		for each (AppObject* obj in objects)
 		{
 
 			bool isMain = (obj->theRole == Entity::MAIN);
+			//			bool inPosition = obj->inPosition(x, y);
 
 			if (pressUp) {
 				obj->position += direction * deltaTime *speed;
@@ -247,12 +343,46 @@ namespace App {
 			if (pressLeft) {
 				obj->position -= rightMove * deltaTime *speed;
 			}
-			/*if (pressPageUp) {
-				obj->position -= rightMove * deltaTime *speed;
-			}
-			if (pressPageDown) {
-				obj->position -= rightMove * deltaTime *speed;
-			}*/
+			/*if (c > 50)
+				if (inPosition) {
+					cout << "OBj =" << obj->id << " check position TRUE" << endl;
+
+					obj->textureID = textureIDs[2];
+					if (pressENter) {
+						obj->active = true;
+						obj->textureID = textureIDs[3];
+					}
+					if (pressBackSpace) {
+						obj->active = false;
+						obj->textureID = worldTexID;
+					}
+					obj->initializeTextureBuffer();
+					obj->initializeVertexAndNormalBuffer();
+					c = 0;
+				}
+				else {
+					if (!obj->active) obj->textureID = worldTexID;
+					else obj->textureID = textureIDs[3];
+
+					obj->initializeTextureBuffer();
+					obj->initializeVertexAndNormalBuffer();
+					c = 0;
+				}
+				//MOUSE HOVER//
+
+				*/
+				//		cout << "MOUSE " << x << "," << y << endl;
+
+
+
+						//	cout << " INPOSITION " << inPosition << endl;
+
+						/*if (pressPageUp) {
+							obj->position -= rightMove * deltaTime *speed;
+						}
+						if (pressPageDown) {
+							obj->position -= rightMove * deltaTime *speed;
+						}*/
 
 			if (!isMain) continue;
 
@@ -274,6 +404,11 @@ namespace App {
 			if (pressD) {
 				obj->position.x -= deltaTime;
 			}
+			/*if (pressI) {
+				printVector(obj->position, "MAIN POS");
+				cout << "MOUSE " << x << "," << y << endl;
+
+			}*/
 
 			//object operation
 			if (pressN && c > 50) {
@@ -344,6 +479,7 @@ namespace App {
 		int arrayBufferOffset = 0;
 		GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
 
+		glViewport(0, 0, WIN_W, WIN_H);
 
 		do {
 
@@ -361,10 +497,7 @@ namespace App {
 				for each (AppObject* obj in objects)
 				{
 
-					if (obj->theRole == MAIN) {
-					 bool updateObjList =	handleCollision(obj);
-					 if (updateObjList) break;
-					}
+
 
 					string name = "OBJ-" + to_string(obj->id);
 					//if (obj->theRole == MAIN)				printVector(obj->position, name);
@@ -376,7 +509,64 @@ namespace App {
 					mat4 view = glm::lookAt(obj->position, obj->position + direction, up);
 					//std::cout << position.x << "-" << position.y << "-" << position.z << "-" << direction.b << "-" << direction.g << endl;
 					mat4 mvp = projection * view * model;
+					if (obj->theRole == MAIN) {
 
+						////mouse
+						//double x, y;
+						//double xTemp, yTemp;
+						//glfwGetCursorPos(window, &x, &y);
+
+						////obj coord on viewport
+						//GLdouble model_view[16];
+						//glGetDoublev(GL_MODELVIEW_MATRIX, model_view);
+						//GLdouble projection_mat[16];
+						//glGetDoublev(GL_PROJECTION_MATRIX, projection_mat);
+						//GLint viewPort[4];
+						//glGetIntegerv(GL_VIEWPORT, viewPort);
+
+						//float windowCoordinate[3];
+						////
+						//float windowCoordinateLT[3];
+						//float windowCoordinateLB[3];
+						//float windowCoordinateRT[3];
+						//float windowCoordinateRB[3];
+
+						//int res = glhProjectf(obj->position.x, obj->position.y, obj->position.z,
+						//	model_view, projection_mat, viewPort, windowCoordinate);
+						////
+						//float halfDimensionX = obj->dimension.x / 2;
+						//float halfDimensionY = obj->dimension.y / 2;
+						//int resRB = glhProjectf(obj->position.x - halfDimensionX, obj->position.y + halfDimensionY, obj->position.z,
+						//	model_view, projection_mat, viewPort, windowCoordinateRB);
+						//int resRT = glhProjectf(obj->position.x - halfDimensionX, obj->position.y - halfDimensionY, obj->position.z,
+						//	model_view, projection_mat, viewPort, windowCoordinateRT);
+						//int resLB = glhProjectf(obj->position.x + halfDimensionX, obj->position.y + halfDimensionY, obj->position.z,
+						//	model_view, projection_mat, viewPort, windowCoordinateLB);
+						//int resLT = glhProjectf(obj->position.x + halfDimensionX, obj->position.y - halfDimensionY, obj->position.z,
+						//	model_view, projection_mat, viewPort, windowCoordinateLT);
+						//
+						//vec3 winCoord = vec3(windowCoordinate[0], windowCoordinate[1], windowCoordinate[2]);
+
+						//vec3 winCoordLT = vec3(windowCoordinateLT[0], windowCoordinateLT[1], windowCoordinateLT[2]);
+						//vec3 winCoordLB = vec3(windowCoordinateLB[0], windowCoordinateLB[1], windowCoordinateLB[2]);
+						//vec3 winCoordRT = vec3(windowCoordinateRT[0], windowCoordinateRT[1], windowCoordinateRT[2]);
+						//vec3 winCoordRB = vec3(windowCoordinateRB[0], windowCoordinateRB[1], windowCoordinateRB[2]);
+
+
+						if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {
+
+							/*printVector(winCoord, "===OBJ POS GLUPROJ CENTER");
+							printVector(winCoordLT, "===OBJ POS GLUPROJ LT");
+							printVector(winCoordLB, "===OBJ POS GLUPROJ LB");
+							printVector(winCoordRT, "===OBJ POS GLUPROJ RT");
+							printVector(winCoordRB, "===OBJ POS GLUPROJ RB");
+							printVector(vec3(200 + x / 2, 180 + (WIN_H - y) / 2.6, 0), "===MOUSE POS");*/
+							//		printMatrix(view, "OBJ VIEW");
+								//	printMatrix(projection, "OBJ projection");
+						}
+						bool updateObjList = handleCollision(obj);
+						if (updateObjList) break;
+					}
 					//test texture
 					glActiveTexture(GL_TEXTURE0);
 					glBindTexture(GL_TEXTURE_2D, obj->textureID);

@@ -1,8 +1,12 @@
 #pragma once
+
 #include "libs.hpp"
 #include "VectorUtil.hpp"
 #include "common\ResourceLoader.hpp"
 #include "AppObject.h"
+#include "GL/freeglut.h"
+#include "GL/glut.h"
+
 
 using namespace glm;
 using namespace std;
@@ -24,7 +28,7 @@ namespace App {
 		const string vertexShaderFileName = "vertexShader.txt";
 		const string fragmentShaderFileName = "fragmentShader.txt";
 
-		const int WIN_W = 900, WIN_H = 600;
+		const int WIN_W = 800, WIN_H = 600;
 
 		float horizontalAngle = 3.14f; //toward -Z
 		float verticalAngle = 0.0f; //"0" value look at horizon
@@ -44,9 +48,9 @@ namespace App {
 		//lighting
 		GLuint lightID, modelMatrixID, viewMatrixID;
 		vec3 lightPos= vec3(4, 4, 4);
-		int xCount = 3;
-		int yCount = 1;
-		int zCount = 2;
+		int xCount = 23;
+		int yCount = 13;
+		int zCount = 1;
 		int vertexCoordSize = 3;
 		int uvCoordSize = 2;
 		int normalCoordSize = 3;

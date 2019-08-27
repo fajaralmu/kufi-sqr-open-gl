@@ -17,18 +17,19 @@ namespace Entity {
 
 	void BaseEntity::init()
 	{
-//		loadVertex(); //for computing dimension
+		//		loadVertex(); //for computing dimension
 		initTexture = false;
 		initBuffer = false;
+		active = false;
 	}
-	
+
 	void BaseEntity::initializeTextureBuffer()
 	{
 		/*TEX  & NORMAL BUFFER*/
 		glBindBuffer(GL_ARRAY_BUFFER, textureID);
 		int colorBufferSize = uvArray.size() * sizeof(vec2); //sizeof(g_color_buffer_data)
 		glBufferData(GL_ARRAY_BUFFER, colorBufferSize, &uvArray[0], GL_STATIC_DRAW);
-		
+
 	}
 
 	void BaseEntity::intializeVertex()
@@ -51,7 +52,7 @@ namespace Entity {
 
 	void BaseEntity::initializeVertexAndNormalBuffer()
 	{
-		
+
 		glGenVertexArrays(1, &vertexArrayID);
 		glBindVertexArray(vertexArrayID);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
@@ -77,16 +78,31 @@ namespace Entity {
 
 		if (objPos.x >= position.x &&position.x >= objPos.x - obj->dimension.x) {
 			if (objPos.y <= position.y &&position.y <= objPos.y + obj->dimension.y) {
-				
+
 				if (objPos.z >= position.z &&position.z >= objPos.z - obj->dimension.z) {
 					collide = true;
 				}
 			}
 		}
-		
-		
+
+
 
 		return collide;
+	}
+
+	bool BaseEntity::inPosition(float x, float y, vec3 objLT, vec3 objLB, vec3 objRT, vec3 objRB )
+	{
+		bool inPos = false;
+		//printVector(vec3(x, y, 0), "MOUSE++POS");
+		//TODO: rotation operation
+		if (x >= objLT.x && x <= objRT.x) {
+
+			if (y <= objLT.y &&y >= objLB.y)
+			{
+				inPos = true;
+			}
+		}
+		return inPos;
 	}
 
 	void BaseEntity::setVertexObj(VertexObj vertexOBJ)

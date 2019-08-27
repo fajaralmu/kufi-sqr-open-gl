@@ -74,12 +74,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)Link\GLFW\include;$(SolutionDir)Link\GLEW\include;$(SolutionDir)Link\GLM\include;$(SolutionDir)Link\SOIL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Link\GLFW\include;$(SolutionDir)Link\GLEW\include;$(SolutionDir)Link\GLM\include;$(SolutionDir)Link\SOIL2\include;$(SolutionDir)Link\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)Link\GLEW\lib;$(SolutionDir)Link\GLFW\lib;$(SolutionDir)Link\SOIL2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Link\GLEW\lib;$(SolutionDir)Link\GLFW\lib;$(SolutionDir)Link\SOIL2\lib;$(SolutionDir)Link\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;soil2-debug.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
