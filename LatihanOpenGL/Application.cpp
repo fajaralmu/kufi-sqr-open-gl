@@ -49,8 +49,8 @@ namespace App {
 		std::cout << ("GLEW initialized.. ") << endl;
 
 		AppObject * objA;
-		mainTexID = loadBMP_custom("main_obj.bmp");
-		worldTexID = loadBMP_custom("number.bmp");
+		mainTexID = loadBMP_custom("number.bmp");
+		worldTexID = loadBMP_custom("brick.bmp");
 		/*	mainVertObj = loadObjectFromFile("cube.obj");
 			worldVertObj = loadObjectFromFile("cube.obj");*/
 
@@ -61,14 +61,25 @@ namespace App {
 
 
 		for (int i = 0; i < 5; i++) {
+			VertexObj vertObj = loadObjectFromFile("cube.obj");// , this->vertexArray, uvArray, normalArray);
+
 			textureIDs[i] = loadBMP_custom(textureNames[i].c_str());
+			/*TEX  & NORMAL BUFFER*/
 			glBindBuffer(GL_ARRAY_BUFFER, textureIDs[i]);
+			int colorBufferSize = vertObj.uvsArray.size() * sizeof(vec2); //sizeof(g_color_buffer_data)
+			glBufferData(GL_ARRAY_BUFFER, colorBufferSize, &vertObj.uvsArray[0], GL_STATIC_DRAW);
+
+			//glGenBuffers(1, &normalIDs[i]);//generate 1 buffer and the identifier in vertexBuffer
+			//glBindBuffer(GL_ARRAY_BUFFER, normalIDs[i]);
+			//int normalBufferSize = vertObj.normalsArray.size() * sizeof(vec3);// sizeof(g_vertex_buffer_data);
+			//glBufferData(GL_ARRAY_BUFFER, normalBufferSize, &vertObj.normalsArray[0], GL_STATIC_DRAW);
 
 		}
 
-		objA = new AppObject("cube.obj", "main_obj.bmp");
+		objA = new AppObject("cube-old.obj", "main_obj.bmp");
 		objA->theRole = Entity::MAIN;
 		objA->textureID = mainTexID;
+		objA->active = true;
 		//objA->setVertexObj(mainVertObj);
 		objA->intializeVertex();
 		objects.push_back(objA);
@@ -83,9 +94,9 @@ namespace App {
 					obj->textureID = worldTexID;
 					//obj->setVertexObj(worldVertObj);
 					obj->intializeVertex();
-					obj->position.x = x * (obj->dimension.x + padding);
-					obj->position.y = y * (obj->dimension.y + padding);
-					obj->position.z += z * (obj->dimension.z + padding);
+					obj->position.x = x * (objA->dimension.x + padding);
+					obj->position.y = y * (objA->dimension.y + padding);
+					obj->position.z += z * (objA->dimension.z + padding);
 
 					objects.push_back(obj);
 				}
@@ -146,15 +157,26 @@ namespace App {
 		}
 	}
 
+	void Application::getAllActiveObj()
+	{
+		activeObj.clear();
+		for each (BaseEntity * obj in objects)
+		{
+			if (obj->theRole != MAIN && obj->active) {
+				activeObj.push_back(obj);
+			}
+		}
+
+	}
+
 	int collideTimer = 0;
 
 	bool Application::handleCollision(BaseEntity* mainObj)
 	{
 		collideTimer++;
-		
+
 		for each (AppObject* obj in objects)
 		{
-
 			//mouse
 			double x, y;
 			double xTemp, yTemp;
@@ -220,12 +242,17 @@ namespace App {
 
 			bool collide = mainObj->isCollide(obj);
 			if ((collide || inPosition || obj->active)) {
-				obj->textureID = mainTexID;
+				obj->textureID = textureIDs[3];
 				//	obj->initializeBuffer();
 				if (!obj->active && glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS) {
 					removeObject(obj);
 					return true;
 					break;
+				}
+				if (collideTimer > 20 && collide && glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+					collideTimer = 0;
+					mainObj->joinObject(obj, true, vec3(0,0,0));
+					getUniformsLocationFromShader();
 				}
 				if (collideTimer > 20 && inPosition && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
 					collideTimer = 0;
@@ -234,11 +261,13 @@ namespace App {
 					//return true;
 			//		break;
 				}
-
 			}
-			else {
+
+			if (obj->active && !collide && !inPosition) {
+				obj->textureID = mainTexID;
+			}
+			else if (!collide && !inPosition) {
 				obj->textureID = worldTexID;
-				//	obj->initializeBuffer();
 			}
 		}
 		return false;
@@ -274,7 +303,9 @@ namespace App {
 		bool pressN = glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS;
 		bool pressC = glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS;
 		bool pressI = glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS;
+		bool pressU = glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS;
 		bool pressDel = glfwGetKey(window, GLFW_KEY_DELETE) == GLFW_PRESS;
+		bool pressEnd = glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS;
 
 		if (init) {
 			//	glfwGetCursorPos(window, &xpos, &ypos);
@@ -310,11 +341,18 @@ namespace App {
 
 		if (pressDel) {
 			for each (AppObject* obj in objects) {
-				if(!obj->active)
+				if (!obj->active)
 					obj->isDeleted = true;
 			}
-
 		}
+		if (pressEnd) {
+			for each (AppObject* obj in objects) {
+				if (obj->active)
+					obj->isDeleted = true;
+			}
+		}
+		
+
 		if (pressSpace) {
 			deltaTime *= 3;
 		}
@@ -336,41 +374,8 @@ namespace App {
 			if (pressLeft) {
 				obj->position -= rightMove * deltaTime *speed;
 			}
-			
-			/*if (c > 50)
-				if (inPosition) {
-					cout << "OBj =" << obj->id << " check position TRUE" << endl;
 
-					obj->textureID = textureIDs[2];
-					if (pressENter) {
-						obj->active = true;
-						obj->textureID = textureIDs[3];
-					}
-					if (pressBackSpace) {
-						obj->active = false;
-						obj->textureID = worldTexID;
-					}
-					obj->initializeTextureBuffer();
-					obj->initializeVertexAndNormalBuffer();
-					c = 0;
-				}
-				else {
-					if (!obj->active) obj->textureID = worldTexID;
-					else obj->textureID = textureIDs[3];
-
-					obj->initializeTextureBuffer();
-					obj->initializeVertexAndNormalBuffer();
-					c = 0;
-				}
-				//MOUSE HOVER//
-
-				*/
-				//		cout << "MOUSE " << x << "," << y << endl;
-
-
-
-						//	cout << " INPOSITION " << inPosition << endl;
-
+		
 						/*if (pressPageUp) {
 							obj->position -= rightMove * deltaTime *speed;
 						}
@@ -405,12 +410,18 @@ namespace App {
 			}*/
 
 			//object operation
+			if (pressU &&c >50) {
+				c = 0;
+				getAllActiveObj();
+				obj->joinObjects(activeObj);
+			}
+
 			if (pressN && c > 50) {
 
 				AppObject * newObj;
-				newObj = new AppObject("cube.obj", "number.bmp");
+				newObj = new AppObject("cube-old.obj", "number.bmp");
 				newObj->position = obj->position;
-				newObj->textureID = worldTexID;
+				newObj->textureID = mainTexID;
 				//newObj->setVertexObj(worldVertObj);
 				newObj->intializeVertex();
 				addObject(newObj);
@@ -504,60 +515,6 @@ namespace App {
 					//std::cout << position.x << "-" << position.y << "-" << position.z << "-" << direction.b << "-" << direction.g << endl;
 					mat4 mvp = projection * view * model;
 					if (obj->theRole == MAIN) {
-
-						////mouse
-						//double x, y;
-						//double xTemp, yTemp;
-						//glfwGetCursorPos(window, &x, &y);
-
-						////obj coord on viewport
-						//GLdouble model_view[16];
-						//glGetDoublev(GL_MODELVIEW_MATRIX, model_view);
-						//GLdouble projection_mat[16];
-						//glGetDoublev(GL_PROJECTION_MATRIX, projection_mat);
-						//GLint viewPort[4];
-						//glGetIntegerv(GL_VIEWPORT, viewPort);
-
-						//float windowCoordinate[3];
-						////
-						//float windowCoordinateLT[3];
-						//float windowCoordinateLB[3];
-						//float windowCoordinateRT[3];
-						//float windowCoordinateRB[3];
-
-						//int res = glhProjectf(obj->position.x, obj->position.y, obj->position.z,
-						//	model_view, projection_mat, viewPort, windowCoordinate);
-						////
-						//float halfDimensionX = obj->dimension.x / 2;
-						//float halfDimensionY = obj->dimension.y / 2;
-						//int resRB = glhProjectf(obj->position.x - halfDimensionX, obj->position.y + halfDimensionY, obj->position.z,
-						//	model_view, projection_mat, viewPort, windowCoordinateRB);
-						//int resRT = glhProjectf(obj->position.x - halfDimensionX, obj->position.y - halfDimensionY, obj->position.z,
-						//	model_view, projection_mat, viewPort, windowCoordinateRT);
-						//int resLB = glhProjectf(obj->position.x + halfDimensionX, obj->position.y + halfDimensionY, obj->position.z,
-						//	model_view, projection_mat, viewPort, windowCoordinateLB);
-						//int resLT = glhProjectf(obj->position.x + halfDimensionX, obj->position.y - halfDimensionY, obj->position.z,
-						//	model_view, projection_mat, viewPort, windowCoordinateLT);
-						//
-						//vec3 winCoord = vec3(windowCoordinate[0], windowCoordinate[1], windowCoordinate[2]);
-
-						//vec3 winCoordLT = vec3(windowCoordinateLT[0], windowCoordinateLT[1], windowCoordinateLT[2]);
-						//vec3 winCoordLB = vec3(windowCoordinateLB[0], windowCoordinateLB[1], windowCoordinateLB[2]);
-						//vec3 winCoordRT = vec3(windowCoordinateRT[0], windowCoordinateRT[1], windowCoordinateRT[2]);
-						//vec3 winCoordRB = vec3(windowCoordinateRB[0], windowCoordinateRB[1], windowCoordinateRB[2]);
-
-
-						if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {
-
-							/*printVector(winCoord, "===OBJ POS GLUPROJ CENTER");
-							printVector(winCoordLT, "===OBJ POS GLUPROJ LT");
-							printVector(winCoordLB, "===OBJ POS GLUPROJ LB");
-							printVector(winCoordRT, "===OBJ POS GLUPROJ RT");
-							printVector(winCoordRB, "===OBJ POS GLUPROJ RB");
-							printVector(vec3(200 + x / 2, 180 + (WIN_H - y) / 2.6, 0), "===MOUSE POS");*/
-							//		printMatrix(view, "OBJ VIEW");
-								//	printMatrix(projection, "OBJ projection");
-						}
 						bool updateObjList = handleCollision(obj);
 						if (updateObjList) break;
 					}

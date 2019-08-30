@@ -44,6 +44,8 @@ namespace App {
 		int counter = 20;
 		
 		vector<BaseEntity* > objects;
+		vector<BaseEntity*> activeObj;
+
 
 		//lighting
 		GLuint lightID, modelMatrixID, viewMatrixID;
@@ -59,6 +61,7 @@ namespace App {
 			"a.bmp","b.bmp","c.bmp","d.bmp","e.bmp"
 		};
 		GLuint textureIDs[5];;
+		GLuint normalIDs[5];;
 		GLuint mainTexID;
 		GLuint worldTexID;
 		/*VertexObj mainVertObj;
@@ -71,6 +74,7 @@ namespace App {
 
 		void addObject(BaseEntity * obj);
 		void removeObject(BaseEntity * obj);
+		void getAllActiveObj();
 
 		double  xpos = 0, ypos = 0;
 		bool init = true;

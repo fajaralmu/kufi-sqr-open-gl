@@ -21,9 +21,12 @@ namespace Entity {
 		bool isCollide(BaseEntity* obj);
 		bool inPosition(float x, float y, vec3 objLT, vec3 objLB, vec3 objRT, vec3 objRB);
 		void setVertexObj(VertexObj vertexOBJ);
+		void joinObject(BaseEntity * obj, bool resetObjProperty, vec3 distance);
+		void joinObjects(std::vector<BaseEntity *> objects);
 		//virtual void loadTexture();
 		float calculateDimension(int index, std::vector<glm::vec3> theVector);
-		
+		void setDimension();
+
 		vec3 dimension;
 		vec3 position = glm::vec3(0, 0, 10); //
 		std::vector<glm::vec3> vertexArray, normalArray;

@@ -63,7 +63,7 @@ GLuint loadBMP_custom(const char * imagepath) {
 	data = new unsigned char[imageSize];
 	//read actual data from file
 	fread(data, elementSize, imageSize, file);
-	cout << "Data: " << data << endl;
+//	cout << "Data: " << data << endl;
 	fclose(file);
 
 	//generate one openGL texture
