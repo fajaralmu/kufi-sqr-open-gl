@@ -40,6 +40,7 @@ namespace App {
 		float speed = 3.0f; //3 unit/second
 		float mouseSpeed = 0.005f;
 		float lastTime = glfwGetTime();
+		bool pointerMode = false;
 		GLdouble mouseX, mouseY;
 		GLdouble mouseActualX=0, mouseActualY=0;
 

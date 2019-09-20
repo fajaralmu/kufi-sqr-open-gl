@@ -85,12 +85,13 @@ namespace App {
 
 		}
 
-		objA = new AppObject("cube.obj", "number_.bmp");
+		objA = new AppObject("little-cube.obj", "number_.bmp");
 		objA->theRole = Entity::MAIN;
 		objA->textureID = mainTexID;
 		objA->active = true;
 		//objA->setVertexObj(mainVertObj);
 		objA->intializeVertex();
+		vec3 BaseDimension = vec3(2, 2, 2);
 		objects.push_back(objA);
 		float padding = 0.0;
 		//init x count objs
@@ -103,9 +104,9 @@ namespace App {
 					obj->textureID = worldTexID;
 					//obj->setVertexObj(worldVertObj);
 					obj->intializeVertex();
-					obj->position.x = x * (objA->dimension.x + padding);
-					obj->position.y = y * (objA->dimension.y + padding);
-					obj->position.z += z * (objA->dimension.z + padding);
+					obj->position.x = x * (BaseDimension.x + padding);
+					obj->position.y = y * (BaseDimension.y + padding);
+					obj->position.z += z * (BaseDimension.z + padding);
 
 					objects.push_back(obj);
 				}
@@ -188,11 +189,13 @@ namespace App {
 					glfwSetCursorPos(window, WIN_W / 2, WIN_H / 2);
 					getMouseMovement();
 				}
-				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
-				if (pressM) {
+				if (pointerMode)
 					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+				else
+					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
+				if (pressM) { pointerMode = !pointerMode; }
+				if(pointerMode){
 					vec3 movement = getMouseMovement(false);
 					double div = (obj->position.z/10);
 					double moveX = movement.x/div, moveY = movement.y/div;

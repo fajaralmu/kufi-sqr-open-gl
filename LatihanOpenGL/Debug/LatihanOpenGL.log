@@ -4,12 +4,12 @@ c:\program files (x86)\windows kits\8.1\include\shared\minwindef.h(130): warning
 e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.h(42): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(14): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(143): warning C4018: '<': signed/unsigned mismatch
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(161): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(200): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(201): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(252): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(423): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(505): warning C4172: returning address of local variable or temporary: arr
+e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(144): warning C4018: '<': signed/unsigned mismatch
+e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(162): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(203): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(204): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(255): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(426): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(508): warning C4172: returning address of local variable or temporary: arr
   LatihanOpenGL.vcxproj -> E:\Visual Studio 2015\Projects\LatihanOpenGLv2\Debug\LatihanOpenGL.exe
   LatihanOpenGL.vcxproj -> E:\Visual Studio 2015\Projects\LatihanOpenGLv2\Debug\LatihanOpenGL.pdb (Partial PDB)
