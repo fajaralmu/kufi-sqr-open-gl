@@ -9,7 +9,7 @@ namespace Entity {
 
 	class BaseEntity
 	{
-		
+
 	public:
 		BaseEntity();
 		~BaseEntity();
@@ -20,6 +20,7 @@ namespace Entity {
 		//void changeTexture(std::string filePath);
 		bool isCollide(BaseEntity* obj);
 		bool inPosition(float x, float y, vec3 objLT, vec3 objLB, vec3 objRT, vec3 objRB);
+		bool inPositionV2(float x, float y, vec3 objLT, vec3 objLB, vec3 objRT, vec3 objRB);
 		void setVertexObj(VertexObj vertexOBJ);
 		void joinObject(BaseEntity * obj, bool resetObjProperty, vec3 distance);
 		void joinObjects(std::vector<BaseEntity *> objects);
@@ -27,8 +28,9 @@ namespace Entity {
 		float calculateDimension(int index, std::vector<glm::vec3> theVector);
 		void setDimension();
 
-		vec3 dimension;
+		vec3 dimension, direction;
 		vec3 position = glm::vec3(0, 0, 10); //
+		mat4 model; mat4 projection; mat4 view;
 		std::vector<glm::vec3> vertexArray, normalArray;
 		std::vector<glm::vec2> uvArray;
 		BaseEntity::GLuint uvbuffer;
@@ -40,6 +42,8 @@ namespace Entity {
 		GLuint vertexBufferID; //identify vertexBuffer
 		std::string texPath;
 		std::string vertPath;
+		mat4 mvp;
+		bool mvpSet = false;
 
 
 		//identity
@@ -49,11 +53,11 @@ namespace Entity {
 		bool isDeleted = false;
 		EntityRole theRole;
 		int id;
-		
-		
+
+
 	};
 	static int staticID;
 
-	
+
 }
 

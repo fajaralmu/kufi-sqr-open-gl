@@ -97,6 +97,21 @@ namespace Entity {
 		return inPos;
 	}
 
+	bool BaseEntity::inPositionV2(float x, float y, vec3 objLT, vec3 objLB, vec3 objRT, vec3 objRB)
+	{
+		bool inPos = false;
+		//printVector(vec3(x, y, 0), "MOUSE++POS");
+		//TODO: rotation operation
+		if (x <= objLT.x && x >= objRT.x) {
+
+			if (y >= objLT.y &&y <= objLB.y)
+			{
+				inPos = true;
+			}
+		}
+		return inPos;
+	}
+
 	void BaseEntity::setVertexObj(VertexObj vertexOBJ)
 	{
 		normalArray = vertexOBJ.normalsArray;

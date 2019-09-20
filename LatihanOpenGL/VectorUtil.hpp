@@ -7,7 +7,11 @@
 #include "libs.hpp"
 using namespace glm;
 
+float interpolation(double x, int actualW, int actualH, int appW, int appH);
+mat4 doubleArrayToMat4(GLdouble arr[]);
 void printVector(vec3 vec, std::string name);
+void printArray(float floats[]);
+void printArray(GLint doubles[]);
 void printMatrix(mat4 mat, std::string name);
 int glhProjectf(float objx, float objy, float objz, GLdouble *modelview, GLdouble *projection, int *viewport, float *windowCoordinate);
 void MultiplyMatrices4by4OpenGL_FLOAT(float *result, float *matrix1, float *matrix2);

@@ -5,6 +5,23 @@ void printVector(vec3 vec, std::string name) {
 	std::cout << name << ", x:" << vec.x << " y:" << vec.y << " z:" << vec.z << std::endl;
 }
 
+void printArray(float floats[])
+{
+	//std::cout << "print " << sizeof(floats) << std::endl;
+	for (int i = 0; i < sizeof(floats); i++) {
+		std::cout << "(" << floats[i] << ") == ";
+	}
+	std::cout << std::endl;
+}
+
+void printArray(GLint doubles[])
+{
+	for (int i = 0; i < sizeof(doubles); i++) {
+		std::cout << "(" << doubles[i] << ") == ";
+	}
+	std::cout << std::endl;
+}
+
 void printMatrix(mat4 mat, std::string name)
 {
 	std::cout << name << " MATRIX" << std::endl;
@@ -298,4 +315,22 @@ int glhInvertMatrixf2(float *m, float *out)
 	MAT(out, 3, 1) = r3[5], MAT(out, 3, 2) = r3[6];
 	MAT(out, 3, 3) = r3[7];
 	return 1;
+}
+
+float interpolation(double x, int actualBegin, int actualEnd, int appBegin, int appEnd)
+{
+	return appBegin + x*(appEnd - appBegin) / (actualEnd - actualBegin);
+}
+
+mat4 doubleArrayToMat4(GLdouble arr[]) {
+	mat4 mat;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			mat[i][j] = arr[i * 4 + j];
+			//	cout << mat[i][j] <<" "<< i * 4 + j << endl;
+		}
+	}
+
+	return mat;
+
 }
