@@ -41,6 +41,9 @@ namespace App {
 		float mouseSpeed = 0.005f;
 		float lastTime = glfwGetTime();
 		bool pointerMode = false;
+		int cubeDimension = 0;
+		int layoutType = 1;
+
 		GLdouble mouseX, mouseY;
 		GLdouble mouseActualX=0, mouseActualY=0;
 
@@ -57,9 +60,9 @@ namespace App {
 		//lighting
 		GLuint lightID, modelMatrixID, viewMatrixID;
 		vec3 lightPos= vec3(4, 4, 4);
-		int xCount = 25;
+		/*int xCount = 25;
 		int yCount = 13;
-		int zCount = 1;
+		int zCount = 1;*/
 		int vertexCoordSize = 3;
 		int uvCoordSize = 2;
 		int normalCoordSize = 3;
@@ -74,6 +77,7 @@ namespace App {
 		/*VertexObj mainVertObj;
 		VertexObj worldVertObj;*/
 		bool handleCollision(BaseEntity* mainObj, mat4 mvp);
+		void createObject(int xCount, int yCount, int zCount, vec3 BaseDimension, vec3 basePosition, double padding);
 		bool initWindow();
 		void initBufferV2();
 		GLdouble* mat4ToDoubleArray(mat4 mat);

@@ -4,9 +4,27 @@
 namespace App {
 	int texIdx = 0, c = 0;// , collideTimer = 0;
 
-	Application::Application() { xpos = WIN_W / 2; 	ypos = WIN_H / 2; }
+	Application::Application() {
+		xpos = WIN_W / 2; 	ypos = WIN_H / 2;
 
-	Application::~Application() { }
+		cout << "===========AHLAN WA SAHLAN FIE HADZAL BARNAMAJ==============" << endl;
+		cout << "===========WELCOME TO THE APPLICATION=========== " << endl;
+		cout << "Please insert cube dimension: ";
+		cin >> cubeDimension;
+		cout << endl;
+		cout << "Cube dimension is >>" << cubeDimension << endl;
+		cout << "Select the following type" << endl;
+		cout << "1. Using top of cube" << endl;
+		cout << "2. Using base of cube" << endl;
+		cin >> layoutType;
+		cout << endl;
+		cout << "Generating app with layout >>" << layoutType << endl;
+	}
+
+	Application::~Application() {
+
+
+	}
 
 	void Application::mouseProcess(BaseEntity * obj, int b, int s, double mouse_x, double mouse_y)
 	{
@@ -54,9 +72,9 @@ namespace App {
 		}
 		glfwSetCursorPos(window, WIN_W / 2, WIN_H / 2);
 		glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-		
+
 		std::cout << ("GLEW initialized.. ") << endl;
-		
+
 		AppObject * objA;
 		mainTexID = loadBMP_custom("number.bmp");
 		worldTexID = loadBMP_custom("brick.bmp");
@@ -95,9 +113,30 @@ namespace App {
 		objects.push_back(objA);
 		float padding = 0.0;
 		//init x count objs
-		for (int x = 0; x < xCount; x++)
-			for (int y = 0; y < yCount; y++)
-				for (int z = 0; z < zCount; z++)
+		if (layoutType == 1) {
+			createObject(1, cubeDimension, cubeDimension, BaseDimension, vec3(1,1, 1) ,padding);
+			createObject(cubeDimension, cubeDimension, 1, BaseDimension, vec3(1, 1, 1),padding);
+			createObject(cubeDimension, 1, cubeDimension, BaseDimension, vec3(1, 1, 1), padding);
+
+		}
+		else
+		{
+			createObject(1, cubeDimension, cubeDimension, BaseDimension, vec3(cubeDimension, 1, 1), padding);
+		//	createObject(cubeDimension, cubeDimension,1, BaseDimension, vec3(1, 1, 1), padding);
+			createObject(cubeDimension, 1, cubeDimension, BaseDimension, vec3(1, cubeDimension, 1), padding);
+			createObject(cubeDimension, cubeDimension, 1, BaseDimension, vec3(1, 1, cubeDimension), padding);
+		}
+		return true;
+	}
+
+	void Application::createObject(int xCount, int yCount, int zCount, vec3 BaseDimension,vec3 basePosition, double padding) {
+		int posX = basePosition.x-1 ;
+		int posY = basePosition.y-1;
+		int posZ = basePosition.z-1;
+		printVector(basePosition, "CREATING CUBE LAYOUT");
+		for (int x = posX; x < xCount+ posX; x++)
+			for (int y = posY; y < yCount+ posY; y++)
+				for (int z = posZ; z < zCount+ posZ; z++)
 				{
 					AppObject * obj;
 					obj = new AppObject("little-cube.obj", "number_.bmp");
@@ -110,7 +149,6 @@ namespace App {
 
 					objects.push_back(obj);
 				}
-		return true;
 	}
 
 	void Application::initBufferV2()
@@ -185,8 +223,10 @@ namespace App {
 
 				if (pressI)
 				{   //reset mouse MOVEMENT
-					obj->position = vec3(0, 0, obj->position.z);
+					printVector(obj->position, "CURRENT OBject position");
+					obj->position = vec3(0, 0, 10);
 					glfwSetCursorPos(window, WIN_W / 2, WIN_H / 2);
+					printVector(obj->position, "RESET OBject position");
 					getMouseMovement();
 				}
 				if (pointerMode)
@@ -195,13 +235,14 @@ namespace App {
 					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 				if (pressM) { pointerMode = !pointerMode; }
-				if(pointerMode){
+				if (pointerMode) {
 					vec3 movement = getMouseMovement(false);
-					double div = (obj->position.z/10);
-					double moveX = movement.x/div, moveY = movement.y/div;
-					
+					double div = (obj->position.z / 10);
+					double moveX = movement.x / div, moveY = movement.y / div;
+
 					obj->position.x -= moveX;
 					obj->position.y += moveY;
+					obj->position.z += movement.z/ div;
 				}
 			}
 
@@ -532,7 +573,13 @@ namespace App {
 		if (sleep) printVector(vec3(latestX, latestY, 0), " latest pos");
 		double deltaX = latestX - mouseActualX;
 		double deltaY = latestY - mouseActualY;
-		vec3 movement = vec3(deltaX, deltaY, 0);
+		double base = (deltaX * deltaY) / 2;// == NAN ? 0 : (deltaX * deltaY) / 2;
+		double zMove = base;
+		if (zMove != 0) {
+			deltaX = 0;
+			deltaY = 0;
+		}
+		vec3 movement = vec3(deltaX, deltaY, zMove);
 		if (sleep) printVector(movement, " MOVEMENT");
 		mouseActualX = latestX; mouseActualY = latestY;
 		if (sleep)  Sleep(100);
