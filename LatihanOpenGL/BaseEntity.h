@@ -47,6 +47,7 @@ namespace Entity {
 
 
 		//identity
+		bool staticObject = false;
 		bool initTexture = false;
 		bool initBuffer = false;
 		bool active = false;

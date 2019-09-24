@@ -27,12 +27,12 @@ GLuint loadBMP_custom(const char * imagepath) {
 	unsigned int width, height, imageSize;
 	//actual RGB data
 	unsigned char * data;
-
+	cout << "loading " << imagepath << endl;
 	//OPEN FILE
 	char* mode = "rb";
 	FILE * file = fopen(imagepath, mode);
 	if (!file) {
-		printf_s("Image cannot be opened\n");
+		printf_s("Image:  %s, cannot be opened\n", imagepath);
 		return 0;
 	}
 	cout << "Image " << imagepath << " opened" << endl;

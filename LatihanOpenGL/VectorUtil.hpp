@@ -17,5 +17,6 @@ int glhProjectf(float objx, float objy, float objz, GLdouble *modelview, GLdoubl
 void MultiplyMatrices4by4OpenGL_FLOAT(float *result, float *matrix1, float *matrix2);
 void MultiplyMatrixByVector4by4OpenGL_FLOAT(float *resultvector, const float *matrix, const float *pvector);
 int glhInvertMatrixf2(float *m, float *out);
+std::string doubleToString(double floatNumber, int strLen);
 #endif
 

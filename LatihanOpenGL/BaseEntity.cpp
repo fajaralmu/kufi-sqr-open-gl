@@ -8,6 +8,7 @@ namespace Entity {
 	{
 		this->theRole = WORLD;
 		isDeleted = false;
+		staticObject = false;
 		id = Entity::staticID;
 		Entity::staticID++;
 	}
@@ -78,6 +79,9 @@ namespace Entity {
 			if (
 				position.y + dimension.y / 2 >= objPos.y - objDim.y / 2 &&
 				position.y - dimension.y / 2 <= objPos.y - objDim.y / 2)
+				if (
+					position.z + dimension.z / 2 >= objPos.z - objDim.z / 2 &&
+					position.z - dimension.z / 2 <= objPos.z - objDim.z / 2)
 				collide = true;
 		return collide;
 	}

@@ -6,6 +6,9 @@
 #include "AppObject.h"
 #include "GL/freeglut.h"
 #include "GL/glut.h"
+#include <map>
+#include <iomanip>
+#include <sstream>
 
 
 using namespace glm;
@@ -27,7 +30,7 @@ namespace App {
 
 		const string vertexShaderFileName = "vertexShader.txt";
 		const string fragmentShaderFileName = "fragmentShader.txt";
-		void mouseProcess(BaseEntity * obj,int b, int s, double mouse_x, double mouse_y);
+		void mouseProcess(BaseEntity * obj, int b, int s, double mouse_x, double mouse_y);
 		const int WIN_W = 800, WIN_H = 600;
 		const GLint view_port[4] = {
 			0,0,WIN_W,WIN_H
@@ -35,6 +38,7 @@ namespace App {
 
 		float horizontalAngleBase = 3.14f; //toward -Z
 		float horizontalAngle = 3.14f; //toward -Z
+		float verticalAngleBase = 0.0f;
 		float verticalAngle = 0.0f; //"0" value look at horizon
 		float initialFoV = 90.0f; //initial field of view
 		float speed = 3.0f; //3 unit/second
@@ -45,7 +49,7 @@ namespace App {
 		int layoutType = 1;
 
 		GLdouble mouseX, mouseY;
-		GLdouble mouseActualX=0, mouseActualY=0;
+		GLdouble mouseActualX = 0, mouseActualY = 0;
 
 		mat4 viewMatrix, projectionMatrix;
 		vec3 direction, up, rightMove;
@@ -55,29 +59,36 @@ namespace App {
 		vec3 vertexPos(mat4 mvp, vec3 input, bool ismain);
 		vector<BaseEntity* > objects;
 		vector<BaseEntity*> activeObj;
-
-
+		map<char, GLuint> textTextureIDs;
+		const int staticObjCount = 24;
 		//lighting
 		GLuint lightID, modelMatrixID, viewMatrixID;
-		vec3 lightPos= vec3(4, 4, 4);
+		vec3 lightPos = vec3(4, 4, 4);
 		/*int xCount = 25;
 		int yCount = 13;
 		int zCount = 1;*/
 		int vertexCoordSize = 3;
 		int uvCoordSize = 2;
 		int normalCoordSize = 3;
-		
+
 		std::string textureNames[5] = {
 			"a.bmp","b.bmp","c.bmp","d.bmp","e.bmp"
 		};
+
+		std::string textureForTextNames[39] = {
+			"a","b","c","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","1","2","3","4","5","6","7","8","9","0","_","-",".","+",
+		};
+		
 		GLuint textureIDs[5];;
-		GLuint normalIDs[5];;
+		GLuint normalIDs[5];
 		GLuint mainTexID;
 		GLuint worldTexID;
+		vec3 movement;
 		/*VertexObj mainVertObj;
 		VertexObj worldVertObj;*/
 		bool handleCollision(BaseEntity* mainObj, mat4 mvp);
 		void createObject(int xCount, int yCount, int zCount, vec3 BaseDimension, vec3 basePosition, double padding);
+		void printText(string text);
 		bool initWindow();
 		void initBufferV2();
 		GLdouble* mat4ToDoubleArray(mat4 mat);
@@ -94,7 +105,7 @@ namespace App {
 		bool initApp();
 		int run();
 		void getUniformsLocationFromShader();
-		vec3 getMouseMovement(bool sleep =true);
+		vec3 getMouseMovement(bool sleep = true);
 	};
 
 }

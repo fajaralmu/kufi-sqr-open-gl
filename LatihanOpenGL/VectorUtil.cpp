@@ -317,6 +317,21 @@ int glhInvertMatrixf2(float *m, float *out)
 	return 1;
 }
 
+std::string doubleToString(double floatNumber, int strLen)
+{
+	std::string result = "";
+	std::string input = std::to_string(floatNumber);
+	for (int i = 0; i < strLen; i++) {
+		if (input.length() >= strLen) {
+			result += input.at(i);
+		}
+		else {
+			result += '0';
+		}
+	}
+	return result;
+}
+
 float interpolation(double x, int actualBegin, int actualEnd, int appBegin, int appEnd)
 {
 	return appBegin + x*(appEnd - appBegin) / (actualEnd - actualBegin);

@@ -2,7 +2,7 @@
 #include <math.h>
 
 namespace App {
-	int texIdx = 0, c = 0;// , collideTimer = 0;
+	int texIdx = 0;// , c = 0;// , collideTimer = 0;
 
 	Application::Application() {
 		xpos = WIN_W / 2; 	ypos = WIN_H / 2;
@@ -86,20 +86,36 @@ namespace App {
 		/*glBindBuffer(GL_ARRAY_BUFFER, mainVertObj.vertexID);
 		glBindBuffer(GL_ARRAY_BUFFER, worldVertObj.vertexID);*/
 
+		VertexObj BaseVertObj = loadObjectFromFile("cube.obj");// , this->vertexArray, uvArray, normalArray);
 
-		for (int i = 0; i < 5; i++) {
-			VertexObj vertObj = loadObjectFromFile("cube.obj");// , this->vertexArray, uvArray, normalArray);
-
+		for (int i = 0; i < sizeof(textureNames) / sizeof(std::string); i++) {
 			textureIDs[i] = loadBMP_custom(textureNames[i].c_str());
 			/*TEX  & NORMAL BUFFER*/
 			glBindBuffer(GL_ARRAY_BUFFER, textureIDs[i]);
-			int colorBufferSize = vertObj.uvsArray.size() * sizeof(vec2); //sizeof(g_color_buffer_data)
-			glBufferData(GL_ARRAY_BUFFER, colorBufferSize, &vertObj.uvsArray[0], GL_STATIC_DRAW);
+			int colorBufferSize = BaseVertObj.uvsArray.size() * sizeof(vec2); //sizeof(g_color_buffer_data)
+			glBufferData(GL_ARRAY_BUFFER, colorBufferSize, &BaseVertObj.uvsArray[0], GL_STATIC_DRAW);
 
 			//glGenBuffers(1, &normalIDs[i]);//generate 1 buffer and the identifier in vertexBuffer
 			//glBindBuffer(GL_ARRAY_BUFFER, normalIDs[i]);
 			//int normalBufferSize = vertObj.normalsArray.size() * sizeof(vec3);// sizeof(g_vertex_buffer_data);
 			//glBufferData(GL_ARRAY_BUFFER, normalBufferSize, &vertObj.normalsArray[0], GL_STATIC_DRAW);
+
+		}
+		/**
+		* load texture for font
+		*/
+		for (int i = 0; i < sizeof(textureForTextNames) / sizeof(std::string); i++) {
+			if (textureForTextNames[i] == "")
+				continue;
+			string texturePath = "text/" + textureForTextNames[i] + ".bmp";
+			//cout << "loading :" << texturePath << endl;
+			GLuint texID = loadBMP_custom(texturePath.c_str());
+			/*TEX  & NORMAL BUFFER*/
+			glBindBuffer(GL_ARRAY_BUFFER, texID);
+			int colorBufferSize = BaseVertObj.uvsArray.size() * sizeof(vec2); //sizeof(g_color_buffer_data)
+			glBufferData(GL_ARRAY_BUFFER, colorBufferSize, &BaseVertObj.uvsArray[0], GL_STATIC_DRAW);
+			textTextureIDs.insert(pair<char, GLuint>(textureForTextNames[i].at(0), texID));
+			cout << "LOADING ======>" << textureForTextNames[i].at(0) << endl;
 
 		}
 
@@ -114,29 +130,41 @@ namespace App {
 		float padding = 0.0;
 		//init x count objs
 		if (layoutType == 1) {
-			createObject(1, cubeDimension, cubeDimension, BaseDimension, vec3(1,1, 1) ,padding);
-			createObject(cubeDimension, cubeDimension, 1, BaseDimension, vec3(1, 1, 1),padding);
+			createObject(1, cubeDimension, cubeDimension, BaseDimension, vec3(1, 1, 1), padding);
+			createObject(cubeDimension, cubeDimension, 1, BaseDimension, vec3(1, 1, 1), padding);
 			createObject(cubeDimension, 1, cubeDimension, BaseDimension, vec3(1, 1, 1), padding);
 
 		}
 		else
 		{
 			createObject(1, cubeDimension, cubeDimension, BaseDimension, vec3(cubeDimension, 1, 1), padding);
-		//	createObject(cubeDimension, cubeDimension,1, BaseDimension, vec3(1, 1, 1), padding);
+			//	createObject(cubeDimension, cubeDimension,1, BaseDimension, vec3(1, 1, 1), padding);
 			createObject(cubeDimension, 1, cubeDimension, BaseDimension, vec3(1, cubeDimension, 1), padding);
 			createObject(cubeDimension, cubeDimension, 1, BaseDimension, vec3(1, 1, cubeDimension), padding);
 		}
+		int begin = staticObjCount;
+		for (int i = 0; i < staticObjCount; i++) {
+			AppObject* staticA;
+			staticA = new AppObject("cube.obj", "number_.bmp");
+			staticA->textureID = textureIDs[2];
+			staticA->position = vec3(begin - (i)*2.1, -19, 50);
+			staticA->intializeVertex();
+			staticA->staticObject = true;
+			objects.push_back(staticA);
+
+		}
+
 		return true;
 	}
 
-	void Application::createObject(int xCount, int yCount, int zCount, vec3 BaseDimension,vec3 basePosition, double padding) {
-		int posX = basePosition.x-1 ;
-		int posY = basePosition.y-1;
-		int posZ = basePosition.z-1;
+	void Application::createObject(int xCount, int yCount, int zCount, vec3 BaseDimension, vec3 basePosition, double padding) {
+		int posX = basePosition.x - 1;
+		int posY = basePosition.y - 1;
+		int posZ = basePosition.z - 1;
 		printVector(basePosition, "CREATING CUBE LAYOUT");
-		for (int x = posX; x < xCount+ posX; x++)
-			for (int y = posY; y < yCount+ posY; y++)
-				for (int z = posZ; z < zCount+ posZ; z++)
+		for (int x = posX; x < xCount + posX; x++)
+			for (int y = posY; y < yCount + posY; y++)
+				for (int z = posZ; z < zCount + posZ; z++)
 				{
 					AppObject * obj;
 					obj = new AppObject("little-cube.obj", "number_.bmp");
@@ -149,6 +177,26 @@ namespace App {
 
 					objects.push_back(obj);
 				}
+	}
+
+	void Application::printText(string text)
+	{
+		if (text.size() > staticObjCount) { return; }
+		vector<int> staticObjectIdx;
+		int runningI = 0;
+		for (BaseEntity* obj : objects) {
+			if (obj->staticObject) {
+				staticObjectIdx.push_back(runningI);
+				//clear text
+				obj->textureID = textTextureIDs['_'];
+			}
+			runningI++;
+			//obj->intializeVertex();
+		}
+		int textLength = text.size();
+		for (int i = 0; i < textLength; i++) {
+			objects[staticObjectIdx[i]]->textureID = textTextureIDs[text.at(i)];
+		}
 	}
 
 	void Application::initBufferV2()
@@ -164,7 +212,7 @@ namespace App {
 			}
 			cout << "==init buffer" << endl;
 		}
-		catch (exception& e) { cout << ("Exception :") << e.what() << endl; }
+		catch (exception * e) { cout << ("Exception :") << e->what() << endl; }
 	}
 
 	void Application::initShader()
@@ -194,22 +242,6 @@ namespace App {
 		for each (BaseEntity * obj in objects) { if (obj->theRole != MAIN && obj->active) { activeObj.push_back(obj); } }
 	}
 
-
-	vec3 Application::vertexPos(mat4 mvp, vec3 input, bool ismain) {
-		vec4 tp = vec4(input, 1)* mvp;
-		float oow = 1.0 / tp.w;
-		//	cout << "OOW " << tp.w << endl;
-		tp.x *= oow;
-		tp.y *= oow;
-		tp.z *= oow;
-
-		vec3 winPOSS;
-		winPOSS.x = view_port[0] + (1 + tp.x)*view_port[2] / 2;
-		winPOSS.y = view_port[1] + (1 + tp.y)*view_port[3] / 2;
-		//	if(ismain) printVector(winPOSS, "WINPOSS");
-		return winPOSS;
-	}
-
 	bool Application::handleCollision(BaseEntity* mainObj, mat4 mvp)
 	{
 		/*collideTimer++;*/
@@ -228,25 +260,39 @@ namespace App {
 					glfwSetCursorPos(window, WIN_W / 2, WIN_H / 2);
 					printVector(obj->position, "RESET OBject position");
 					getMouseMovement();
+					printVector(direction, "CURRENT DIRECTION");
 				}
 				if (pointerMode)
 					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 				else
 					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-				if (pressM) { pointerMode = !pointerMode; }
+				if (pressM) { pointerMode = !pointerMode; Sleep(5); }
 				if (pointerMode) {
-					vec3 movement = getMouseMovement(false);
-					double div = (obj->position.z / 10);
+					movement = getMouseMovement(false);
+					double div = ( (obj->position.z*obj->position.z)/10);
 					double moveX = movement.x / div, moveY = movement.y / div;
+					if (movement.z == 0) {
+						obj->position.x -= moveX;
+						obj->position.y += moveY;
+					}else
+						obj->position.z +=  movement.z / div;
+					double base = 90;
+					double zero = 0;
+					/*if (obj->position.z < 0.0 || obj->position.z >= 90.0){
+						obj->position.z = 10;
+					}
+					if (obj->position.x < -50||obj->position.x >= 50) {
+						obj->position.x = 0;
+					}
+					if (obj->position.y < -50||obj->position.y >= 50) {
+						obj->position.y = 0;
+					}*/
 
-					obj->position.x -= moveX;
-					obj->position.y += moveY;
-					obj->position.z += movement.z/ div;
 				}
 			}
 
-			bool collide = mainObj->isCollide(obj);
+			bool collide = mainObj->isCollide(obj) && !obj->staticObject;
 			if ((collide || obj->active)) {
 				obj->textureID = textureIDs[3];
 				//	obj->initializeBuffer();
@@ -281,15 +327,14 @@ namespace App {
 				}
 			}
 
-			if (obj->active && !collide) { obj->textureID = mainTexID; }
-			else if (!collide) { obj->textureID = worldTexID; }
+			if (obj->active && !collide && !obj->staticObject) { obj->textureID = mainTexID; }
+			else if (!collide && !obj->staticObject) { obj->textureID = worldTexID; }
 		}
 		return false;
 	}
 
 	void Application::handleMotionKeyPress()
 	{
-		c++;
 		double currentTime = glfwGetTime();
 
 		float deltaTime = float(currentTime - lastTime);
@@ -361,6 +406,7 @@ namespace App {
 
 		for each (AppObject* obj in objects)
 		{
+			if (obj->staticObject) continue;
 			bool isMain = (obj->theRole == Entity::MAIN);
 
 			if (pressUp) { obj->position += direction * deltaTime *speed; }
@@ -380,22 +426,18 @@ namespace App {
 			if (pressE) { obj->position.z -= deltaTime; }
 			if (pressA) { obj->position.x += deltaTime; }
 			if (pressD) { obj->position.x -= deltaTime; }
-			//glfwSetCursorPos(window, WIN_W/2, WIN_H/2);
-
-			/*if (pressM) {
-				vec3 movement = getMouseMovement(false);
-				obj->position.x -= movement.x;
-				obj->position.y += movement.y;
-			}*/
-
+			
+			/*string zMove = "_"+ doubleToString(movement.z,4);*/
+			string positionInfo = "x" + doubleToString(obj->position.x, 5) + "_y" + doubleToString(obj->position.y, 5) + "_z" + doubleToString(obj->position.z, 5);
+			printText(positionInfo);
 			//object operation
-			if (pressU &&c > 50) {
-				c = 0;
+			if (pressU) {
 				getAllActiveObj();
 				obj->joinObjects(activeObj);
+				Sleep(5);
 			}
 
-			if (pressN && c > 50) {
+			if (pressN) {
 				AppObject * newObj;
 				newObj = new AppObject("cube-old.obj", "number.bmp");
 				newObj->position = obj->position;
@@ -404,18 +446,19 @@ namespace App {
 				newObj->intializeVertex();
 				addObject(newObj);
 				initBufferV2();
-				c = 0;
+				Sleep(5);
 				break;
 			}
-			if (pressC && c > 50) {
+			if (pressC) {
 				if (obj->textureID == worldTexID)obj->textureID = mainTexID;
 				else obj->textureID = (textureIDs[texIdx]);
 				obj->initializeTextureBuffer();
 				obj->initializeVertexAndNormalBuffer();
 				cout << "pressC" << endl;
-				c = 0;
+
 				texIdx++;
 				if (texIdx >= 4) { texIdx = 0; }
+				Sleep(5);
 				break;
 			}
 
@@ -458,6 +501,7 @@ namespace App {
 		glViewport(0, 0, WIN_W, WIN_H);
 		glfwSetCursorPos(window, WIN_W / 2, WIN_H / 2);
 		getMouseMovement();
+		printText("2019 fajar");
 
 		do {
 
@@ -472,18 +516,34 @@ namespace App {
 			glEnableVertexAttribArray(0);/*1ST ATTRIBUTE BUFFER : VERTICES*/
 			glEnableVertexAttribArray(1);/*2ND ATRIBUTE BUFFER: UV*/
 			glEnableVertexAttribArray(2);/*3RD ATRIBUTE BUFFER: NORMALS */
+
+			
 			try {
 				for each (AppObject* obj in objects)
 				{
 					if (obj == nullptr || obj->isDeleted) continue;
-					//	string name = "OBJ-" + to_string(obj->id);
-						//if (obj->theRole == MAIN)				printVector(obj->position, name);
-						//model at origin
+
 					mat4 model = glm::mat4(1.0f);
 					//ViewModelProjection : mult of 3 matrices
 					mat4 projection = glm::perspective(glm::radians(angle), aspectRatio, nearClippingPane, farClippingPane);
-					//camera matrix
-					mat4 view = glm::lookAt(obj->position, obj->position + direction, up);
+
+					vec3 staticDirection = vec3(
+						cos(verticalAngleBase) * sin(horizontalAngleBase),
+						sin(verticalAngleBase),
+						cos(verticalAngleBase) * cos(horizontalAngleBase)
+					);
+					vec3 staticRightMove = vec3(
+						sin(horizontalAngleBase - 3.14f / 2.0f),
+						0,
+						cos(horizontalAngleBase - 3.14f / 2.0f)
+					);
+					vec3 staticUp = glm::cross(staticRightMove, staticDirection);
+
+					mat4 view = glm::lookAt(obj->position, obj->position + staticDirection, staticUp);
+					if (!obj->staticObject) {
+						//camera matrix
+						view = glm::lookAt(obj->position, obj->position + direction, up);
+					}
 					//std::cout << position.x << "-" << position.y << "-" << position.z << "-" << direction.b << "-" << direction.g << endl;
 					mat4 mvp = projection * view *model;
 					obj->model = model;
@@ -519,11 +579,15 @@ namespace App {
 					/*DRAW*/
 					//triangle
 					GLint startingVertex = 0;
+					try {
 					GLsizei totalVertices = obj->vertexArray.size();//  sizeof(g_vertex_buffer_data) / sizeof(g_vertex_buffer_data[0]);
-					glDrawArrays(GL_TRIANGLES, startingVertex, totalVertices);
+					
+						glDrawArrays(GL_TRIANGLES, startingVertex, totalVertices);
+					}
+					catch (exception& e) { cout << ("Exception 1 :") << e.what() << endl; continue; }
 				}
 			}
-			catch (exception& e) { cout << ("Exception :") << e.what() << endl; continue; }
+			catch (exception& e) { cout << ("Exception 2 :") << e.what() << endl; continue; }
 			glDisableVertexAttribArray(0);
 			glDisableVertexAttribArray(1);
 			glDisableVertexAttribArray(2);
@@ -558,13 +622,23 @@ namespace App {
 
 	}
 
+	bool justAdjusted = false;
+
 	vec3 Application::getMouseMovement(bool sleep)
 	{
+		if (justAdjusted) {
+			justAdjusted = false;
+			return vec3();
+		}
 		double latestX = 0.0f;
 		double latestY = 0.0f;
 		glfwGetCursorPos(window, &latestX, &latestY);
 
 		if (latestX<0 || latestX> WIN_W || latestY < 0 || latestY > WIN_H) {
+			if (pointerMode) {
+				glfwSetCursorPos(window, WIN_W / 2, WIN_H / 2);
+				justAdjusted = true;
+			}
 			cout << " INVALID POSITION " << endl;
 			return vec3();
 		}
@@ -579,6 +653,13 @@ namespace App {
 			deltaX = 0;
 			deltaY = 0;
 		}
+		/*if (zMove < 0 || zMove>100) {
+			zMove = 0;
+		}
+		if (zMove < 0 || zMove>100) {
+			zMove = 0;
+		}*/
+		
 		vec3 movement = vec3(deltaX, deltaY, zMove);
 		if (sleep) printVector(movement, " MOVEMENT");
 		mouseActualX = latestX; mouseActualY = latestY;
