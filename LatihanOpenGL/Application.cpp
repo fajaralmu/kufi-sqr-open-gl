@@ -272,11 +272,20 @@ namespace App {
 					movement = getMouseMovement(false);
 					double div = ( (obj->position.z*obj->position.z)/10);
 					double moveX = movement.x / div, moveY = movement.y / div;
-					if (movement.z == 0) {
+					if (xyMove) {
 						obj->position.x -= moveX;
 						obj->position.y += moveY;
-					}else
-						obj->position.z +=  movement.z / div;
+					}
+					else if (xzMove) {
+						obj->position.x -= moveX;
+						obj->position.z += moveY;
+					}
+					else if (yzMove) {
+						obj->position.z -= moveX;
+						obj->position.y += moveY;
+					}
+					
+					//	obj->position.z +=  movement.z / div;
 					double base = 90;
 					double zero = 0;
 					/*if (obj->position.z < 0.0 || obj->position.z >= 90.0){
@@ -363,6 +372,7 @@ namespace App {
 		bool pressC = glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS;
 		bool pressI = glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS;
 		bool pressU = glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS;
+		bool pressLShift = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
 		bool pressDel = glfwGetKey(window, GLFW_KEY_DELETE) == GLFW_PRESS;
 		bool pressEnd = glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS;
 
@@ -404,6 +414,38 @@ namespace App {
 
 		if (pressSpace) deltaTime *= 3;
 
+		//movementMode
+		
+		if (pressLShift) {
+			currentMove++;
+			if (currentMove > moveCount) {
+				currentMove = 1;
+			}
+			
+			Sleep(100);
+		}
+		switch (currentMove)
+		{
+		case 1:
+			xyMove = true;
+			xzMove = false;
+			yzMove = false;
+			moveInfo = "xy";
+			break;
+		case 2:
+			xyMove = false;
+			xzMove = true;
+			yzMove = false;
+			moveInfo = "xz";
+			break;
+		case 3:
+			xyMove = false;
+			xzMove = false;
+			yzMove = true;
+			moveInfo = "yz";
+			break;
+		}
+
 		for each (AppObject* obj in objects)
 		{
 			if (obj->staticObject) continue;
@@ -429,7 +471,7 @@ namespace App {
 			
 			/*string zMove = "_"+ doubleToString(movement.z,4);*/
 			string positionInfo = "x" + doubleToString(obj->position.x, 5) + "_y" + doubleToString(obj->position.y, 5) + "_z" + doubleToString(obj->position.z, 5);
-			printText(positionInfo);
+			printText(positionInfo+"_"+ moveInfo);
 			//object operation
 			if (pressU) {
 				getAllActiveObj();
@@ -649,10 +691,11 @@ namespace App {
 		double deltaY = latestY - mouseActualY;
 		double base = (deltaX * deltaY) / 2;// == NAN ? 0 : (deltaX * deltaY) / 2;
 		double zMove = base;
-		if (zMove != 0) {
+		//XYMOVE, XZMOVE, YZMOVE
+		/*if (zMove != 0) {
 			deltaX = 0;
 			deltaY = 0;
-		}
+		}*/
 		/*if (zMove < 0 || zMove>100) {
 			zMove = 0;
 		}
