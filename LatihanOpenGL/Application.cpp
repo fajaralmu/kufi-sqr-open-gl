@@ -278,10 +278,10 @@ namespace App {
 					}
 					else if (xzMove) {
 						obj->position.x -= moveX;
-						obj->position.z += moveY;
+						obj->position.z -= moveY;
 					}
 					else if (yzMove) {
-						obj->position.z -= moveX;
+						obj->position.z += moveX;
 						obj->position.y += moveY;
 					}
 					
@@ -679,6 +679,7 @@ namespace App {
 		if (latestX<0 || latestX> WIN_W || latestY < 0 || latestY > WIN_H) {
 			if (pointerMode) {
 				glfwSetCursorPos(window, WIN_W / 2, WIN_H / 2);
+				glfwGetCursorPos(window, &mouseActualX, &mouseActualY);
 				justAdjusted = true;
 			}
 			cout << " INVALID POSITION " << endl;

@@ -1,25 +1,2 @@
-﻿  Application.cpp
-c:\program files (x86)\windows kits\8.1\include\shared\minwindef.h(130): warning C4005: 'APIENTRY': macro redefinition
-  e:\visual studio 2015\projects\latihanopenglv2\link\glfw\include\glfw3.h(98): note: see previous definition of 'APIENTRY'
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.h(46): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(31): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(32): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(161): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(162): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(163): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(174): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(175): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(176): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(184): warning C4018: '>': signed/unsigned mismatch
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(230): warning C4018: '<': signed/unsigned mismatch
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(276): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(277): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(280): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(281): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(284): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(285): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(350): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(553): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-e:\visual studio 2015\projects\latihanopenglv2\latihanopengl\application.cpp(655): warning C4172: returning address of local variable or temporary: arr
-  LatihanOpenGL.vcxproj -> E:\Visual Studio 2015\Projects\LatihanOpenGLv2\Debug\LatihanOpenGL.exe
+﻿  LatihanOpenGL.vcxproj -> E:\Visual Studio 2015\Projects\LatihanOpenGLv2\Debug\LatihanOpenGL.exe
   LatihanOpenGL.vcxproj -> E:\Visual Studio 2015\Projects\LatihanOpenGLv2\Debug\LatihanOpenGL.pdb (Partial PDB)
