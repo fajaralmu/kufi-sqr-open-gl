@@ -342,6 +342,10 @@ namespace App {
 		return false;
 	}
 
+	bool Application::isPressed(int key) {
+		return  glfwGetKey(window, key) == GLFW_PRESS;
+	}
+
 	void Application::handleMotionKeyPress()
 	{
 		double currentTime = glfwGetTime();
@@ -350,31 +354,31 @@ namespace App {
 		lastTime = currentTime;
 		//printVector(position, "position");
 
-		bool pressUp = glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS;
-		bool pressDown = glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS;
-		bool pressRight = glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS;
-		bool pressLeft = glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS;
-		bool pressO = glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS;
-		bool pressSpace = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
-		bool pressPageUp = glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS;
-		bool pressPageDown = glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS;
-		bool pressRALt = glfwGetKey(window, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS;
-		bool pressRCtrl = glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS;
-		bool pressENter = glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS;
-		bool pressBackSpace = glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS;
-		bool pressW = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
-		bool pressS = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
-		bool pressA = glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS;
-		bool pressD = glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS;
-		bool pressQ = glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS;
-		bool pressE = glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS;
-		bool pressN = glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS;
-		bool pressC = glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS;
-		bool pressI = glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS;
-		bool pressU = glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS;
-		bool pressLShift = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
-		bool pressDel = glfwGetKey(window, GLFW_KEY_DELETE) == GLFW_PRESS;
-		bool pressEnd = glfwGetKey(window, GLFW_KEY_END) == GLFW_PRESS;
+		bool pressUp = isPressed(GLFW_KEY_UP);
+		bool pressDown = isPressed(GLFW_KEY_DOWN);
+		bool pressRight = isPressed(GLFW_KEY_RIGHT);
+		bool pressLeft = isPressed(GLFW_KEY_LEFT);
+		bool pressO = isPressed(GLFW_KEY_O);
+		bool pressSpace = isPressed(GLFW_KEY_SPACE);
+		bool pressPageUp = isPressed(GLFW_KEY_PAGE_UP);
+		bool pressPageDown = isPressed(GLFW_KEY_PAGE_DOWN);
+		bool pressRALt = isPressed(GLFW_KEY_RIGHT_ALT);
+		bool pressRCtrl = isPressed(GLFW_KEY_RIGHT_CONTROL);
+		bool pressENter = isPressed(GLFW_KEY_ENTER);
+		bool pressBackSpace = isPressed(GLFW_KEY_BACKSPACE);
+		bool pressW = isPressed(GLFW_KEY_W);
+		bool pressS = isPressed(GLFW_KEY_S);
+		bool pressA = isPressed(GLFW_KEY_A);
+		bool pressD = isPressed(GLFW_KEY_D);
+		bool pressQ = isPressed(GLFW_KEY_Q);
+		bool pressE = isPressed(GLFW_KEY_E);
+		bool pressN = isPressed(GLFW_KEY_N);
+		bool pressC = isPressed(GLFW_KEY_C);
+		bool pressI = isPressed(GLFW_KEY_I);
+		bool pressU = isPressed(GLFW_KEY_U);
+		bool pressLShift = isPressed(GLFW_KEY_LEFT_SHIFT);
+		bool pressDel = isPressed(GLFW_KEY_DELETE);
+		bool pressEnd = isPressed(GLFW_KEY_END);
 
 		if (init) {
 			cout << xpos << "," << ypos << endl;
@@ -478,7 +482,7 @@ namespace App {
 				obj->joinObjects(activeObj);
 				Sleep(5);
 			}
-
+			//new
 			if (pressN) {
 				AppObject * newObj;
 				newObj = new AppObject("cube-old.obj", "number.bmp");
@@ -491,6 +495,8 @@ namespace App {
 				Sleep(5);
 				break;
 			}
+
+			//copy
 			if (pressC) {
 				if (obj->textureID == worldTexID)obj->textureID = mainTexID;
 				else obj->textureID = (textureIDs[texIdx]);
@@ -637,7 +643,7 @@ namespace App {
 			//swap buffer
 			glfwSwapBuffers(window);
 			glfwPollEvents();
-		} while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
+		} while (isPressed(GLFW_KEY_ESCAPE) == false
 			&& glfwWindowShouldClose(window) == 0);
 		//	getchar();
 		return 0;

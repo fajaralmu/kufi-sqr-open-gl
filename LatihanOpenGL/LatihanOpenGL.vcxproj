@@ -68,18 +68,22 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.10150.0\ucrt;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)Link\GLFW\include;$(SolutionDir)Link\GLEW\include;$(SolutionDir)Link\GLM\include;$(SolutionDir)Link\SOIL2\include;$(SolutionDir)Link\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Link\GLFW\include;$(SolutionDir)Link\GLEW\include;$(SolutionDir)Link\GLM\include;$(SolutionDir)Link\SOIL2\include;$(SolutionDir)Link\freeglut\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)Link\GLEW\lib;$(SolutionDir)Link\GLFW\lib;$(SolutionDir)Link\SOIL2\lib;$(SolutionDir)Link\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;soil2-debug.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Link\GLEW\lib;$(SolutionDir)Link\GLFW\lib;$(SolutionDir)Link\SOIL2\lib;$(SolutionDir)Link\freeglut\lib;$(SolutionDir)Link\other\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;soil2-debug.lib;freeglut.lib;ucrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

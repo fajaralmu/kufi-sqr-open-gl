@@ -96,6 +96,7 @@ namespace App {
 		void printText(string text);
 		bool initWindow();
 		void initBufferV2();
+		bool isPressed(int key);
 		GLdouble* mat4ToDoubleArray(mat4 mat);
 
 		void initShader();
